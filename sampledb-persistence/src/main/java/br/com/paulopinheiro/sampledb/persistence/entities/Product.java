@@ -13,7 +13,22 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
-
+/**
+ * 
+ * @author paulopinheiro
+ * Product entity.
+ * 
+ * Due to redundancy, create this trigger in the database
+ * (example for Apache Derby)
+ * 
+ * CREATE TRIGGER update_product_availability
+    AFTER UPDATE ON product
+    REFERENCING NEW AS new
+    FOR EACH ROW MODE DB2SQL
+    UPDATE product SET available = 'FALSE'
+    WHERE product_id = new.product_id
+    AND   new.quantity_on_hand=0;
+ */
 @Entity
 @Table(name = "PRODUCT")
 @NamedQueries({

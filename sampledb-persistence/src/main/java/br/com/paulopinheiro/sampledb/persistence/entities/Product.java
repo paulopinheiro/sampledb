@@ -10,6 +10,7 @@ import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -57,11 +58,33 @@ public class Product implements Serializable {
     @ManyToOne(optional = false)
     private ProductCode productCode;
 
-    public Product() {
+    public Product() {}
+
+    public Product(BigDecimal purchaseCost, Integer quantityOnHand, BigDecimal markup, String available, String description, List<PurchaseOrder> purchaseOrderList, Manufacturer manufacturer, ProductCode productCode) {
+        this.purchaseCost = purchaseCost;
+        this.quantityOnHand = quantityOnHand;
+        this.markup = markup;
+        this.available = available;
+        this.description = description;
+        this.purchaseOrderList = purchaseOrderList;
+        this.manufacturer = manufacturer;
+        this.productCode = productCode;
     }
 
-    public Product(Integer productId) {
-        this.productId = productId;
+    /**
+     * This method determines the selling price by adding the markup amount to
+     * the purchase cost, and apply the discount (based on product code)  
+     * @return the selling price with discount
+     */
+    @Transient
+    public BigDecimal getSellingPriceWithDiscount() {
+        BigDecimal markupAmount, sellingPrice, discount;
+
+        markupAmount = this.getPurchaseCost().multiply(this.getMarkup());
+        sellingPrice = this.getPurchaseCost().add(markupAmount);
+        discount = sellingPrice.multiply(this.getProductCode().getDiscountCode().getRate());
+
+        return sellingPrice.subtract(discount);
     }
 
     public Integer getProductId() {

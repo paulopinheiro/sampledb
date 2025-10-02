@@ -6,7 +6,7 @@ import br.com.paulopinheiro.sampledb.persistence.entities.MicroMarket;
 import br.com.paulopinheiro.sampledb.persistence.entities.Product;
 import br.com.paulopinheiro.sampledb.persistence.entities.ProductCode;
 import br.com.paulopinheiro.sampledb.persistence.entities.PurchaseOrder;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface PurchaseOrderService {
@@ -17,7 +17,7 @@ public interface PurchaseOrderService {
     List<PurchaseOrder> getOrdersByCustomerProduct(Customer customer, Product product);
     List<PurchaseOrder> getOrdersByProductCode(ProductCode productCode);
     List<PurchaseOrder> getOrdersByMicroMarket(MicroMarket microMarket);
-    List<PurchaseOrder> getOrdersByPeriod(Date fromDate, Date toDate);
+    List<PurchaseOrder> getOrdersByPeriod(LocalDate fromDate, LocalDate toDate);
     
     void saveOrder(PurchaseOrder purchaseOrder);
     PurchaseOrder getOrderByNum(Integer orderNum);

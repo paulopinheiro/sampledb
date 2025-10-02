@@ -17,7 +17,6 @@ import java.time.LocalDate;
 @NamedQueries({
     @NamedQuery(name = "PurchaseOrder.findAll", query = "SELECT p FROM PurchaseOrder p")})
 public class PurchaseOrder implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -36,8 +35,14 @@ public class PurchaseOrder implements Serializable {
 
     public PurchaseOrder() {}
 
-    public PurchaseOrder(Integer orderNum) {
-        this.orderNum = orderNum;
+    public PurchaseOrder(Short quantity, BigDecimal shippingCost, LocalDate salesDate, LocalDate shippingDate, String freightCompany, Customer customer, Product product) {
+        this.quantity = quantity;
+        this.shippingCost = shippingCost;
+        this.salesDate = salesDate;
+        this.shippingDate = shippingDate;
+        this.freightCompany = freightCompany;
+        this.customer = customer;
+        this.product = product;
     }
 
     public Integer getOrderNum() {

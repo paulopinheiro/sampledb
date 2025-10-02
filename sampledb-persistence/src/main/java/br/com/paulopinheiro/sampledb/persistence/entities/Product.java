@@ -39,9 +39,13 @@ public class Product implements Serializable {
     @Id
     @Basic(optional = false)
     private Integer productId;
+    @Basic(optional=false)
     private BigDecimal purchaseCost;
+    @Basic(optional=false)
     private Integer quantityOnHand;
+    @Basic(optional=false)
     private BigDecimal markup;
+    @Basic(optional=false)
     private String available;
     private String description;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "productId")

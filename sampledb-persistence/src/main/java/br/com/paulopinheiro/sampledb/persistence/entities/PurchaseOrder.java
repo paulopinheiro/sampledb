@@ -8,11 +8,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "PURCHASE_ORDER")
@@ -26,10 +24,8 @@ public class PurchaseOrder implements Serializable {
     private Integer orderNum;
     private Short quantity;
     private BigDecimal shippingCost;
-    @Temporal(TemporalType.DATE)
-    private Date salesDate;
-    @Temporal(TemporalType.DATE)
-    private Date shippingDate;
+    private LocalDate salesDate;
+    private LocalDate shippingDate;
     private String freightCompany;
     @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "CUSTOMER_ID")
     @ManyToOne(optional = false)
@@ -38,8 +34,7 @@ public class PurchaseOrder implements Serializable {
     @ManyToOne(optional = false)
     private Product product;
 
-    public PurchaseOrder() {
-    }
+    public PurchaseOrder() {}
 
     public PurchaseOrder(Integer orderNum) {
         this.orderNum = orderNum;
@@ -69,19 +64,19 @@ public class PurchaseOrder implements Serializable {
         this.shippingCost = shippingCost;
     }
 
-    public Date getSalesDate() {
+    public LocalDate getSalesDate() {
         return salesDate;
     }
 
-    public void setSalesDate(Date salesDate) {
+    public void setSalesDate(LocalDate salesDate) {
         this.salesDate = salesDate;
     }
 
-    public Date getShippingDate() {
+    public LocalDate getShippingDate() {
         return shippingDate;
     }
 
-    public void setShippingDate(Date shippingDate) {
+    public void setShippingDate(LocalDate shippingDate) {
         this.shippingDate = shippingDate;
     }
 

@@ -14,6 +14,7 @@ import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 /**
  * 
  * @author paulopinheiro
@@ -71,20 +72,36 @@ public class Product implements Serializable {
         this.productCode = productCode;
     }
 
-    /**
-     * This method determines the selling price by adding the markup amount to
-     * the purchase cost, and apply the discount (based on product code)  
-     * @return the selling price with discount
-     */
+    @Transient
+    public BigDecimal getMarkupAmount() {
+        return this.getPurchaseCost().multiply(this.getMarkup());
+    }
+
+    @Transient
+    public BigDecimal getSellingPrice() {
+        return this.getPurchaseCost().add(this.getMarkupAmount());
+    }
+
+    @Transient
+    public BigDecimal getDiscountRate() {
+        BigDecimal discountRate = new BigDecimal(0);
+
+        if ((Optional.ofNullable(this.getProductCode()).isPresent())
+         && (Optional.ofNullable(this.getProductCode().getDiscountCode()).isPresent())
+         && (Optional.ofNullable(this.getProductCode().getDiscountCode().getRate()).isPresent()))
+            discountRate = this.getProductCode().getDiscountCode().getRate();
+
+        return discountRate;
+    }
+
+    @Transient
+    public BigDecimal getDiscountAmount() {
+        return this.getSellingPrice().multiply(this.getDiscountRate());
+    }
+
     @Transient
     public BigDecimal getSellingPriceWithDiscount() {
-        BigDecimal markupAmount, sellingPrice, discount;
-
-        markupAmount = this.getPurchaseCost().multiply(this.getMarkup());
-        sellingPrice = this.getPurchaseCost().add(markupAmount);
-        discount = sellingPrice.multiply(this.getProductCode().getDiscountCode().getRate());
-
-        return sellingPrice.subtract(discount);
+        return this.getSellingPrice().subtract(this.getDiscountAmount());
     }
 
     public Integer getProductId() {

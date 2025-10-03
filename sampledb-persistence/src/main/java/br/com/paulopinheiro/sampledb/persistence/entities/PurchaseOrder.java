@@ -8,6 +8,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -43,6 +44,22 @@ public class PurchaseOrder implements Serializable {
         this.freightCompany = freightCompany;
         this.customer = customer;
         this.product = product;
+    }
+
+    @Transient
+    public BigDecimal getTotalSaleCost() {
+        BigDecimal saleCost, customerDiscount;
+
+        saleCost = this.getProduct().getSellingPriceWithDiscount().multiply(new BigDecimal(this.getQuantity()));
+
+        customerDiscount = saleCost.multiply(this.getCustomer().getDiscountCode().getRate());
+
+        return saleCost.subtract(customerDiscount);
+    }
+
+    @Transient
+    public BigDecimal getTotalCost() {
+        return this.getTotalSaleCost().add(this.getShippingCost());
     }
 
     public Integer getOrderNum() {

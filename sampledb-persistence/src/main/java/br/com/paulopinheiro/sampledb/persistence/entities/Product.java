@@ -1,7 +1,9 @@
 package br.com.paulopinheiro.sampledb.persistence.entities;
 
+import br.com.paulopinheiro.sampledb.persistence.converters.BooleanToStringConverter;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -47,8 +49,9 @@ public class Product implements Serializable {
     private Integer quantityOnHand;
     @Basic(optional=false)
     private BigDecimal markup;
+    @Convert(converter = BooleanToStringConverter.class)
     @Basic(optional=false)
-    private String available;
+    private Boolean available;
     private String description;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "productId")
     private List<PurchaseOrder> purchaseOrderList;
@@ -61,7 +64,7 @@ public class Product implements Serializable {
 
     public Product() {}
 
-    public Product(BigDecimal purchaseCost, Integer quantityOnHand, BigDecimal markup, String available, String description, List<PurchaseOrder> purchaseOrderList, Manufacturer manufacturer, ProductCode productCode) {
+    public Product(BigDecimal purchaseCost, Integer quantityOnHand, BigDecimal markup, Boolean available, String description, List<PurchaseOrder> purchaseOrderList, Manufacturer manufacturer, ProductCode productCode) {
         this.purchaseCost = purchaseCost;
         this.quantityOnHand = quantityOnHand;
         this.markup = markup;
@@ -136,11 +139,11 @@ public class Product implements Serializable {
         this.markup = markup;
     }
 
-    public String getAvailable() {
+    public Boolean isAvailable() {
         return available;
     }
 
-    public void setAvailable(String available) {
+    public void setAvailable(Boolean available) {
         this.available = available;
     }
 

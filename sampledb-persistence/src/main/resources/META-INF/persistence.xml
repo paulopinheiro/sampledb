@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_1.xsd"
-             version="3.1">
-  <persistence-unit name="sampledb-PU" transaction-type="JTA">
-    <provider>jakarta.persistence.spi.PersistenceProvider</provider>
-    <class>br.com.paulopinheiro.sampledb.persistence.entities.DiscountCode</class>
-    <class>br.com.paulopinheiro.sampledb.persistence.entities.MicroMarket</class>
-    <class>br.com.paulopinheiro.sampledb.persistence.entities.Customer</class>
-    <class>br.com.paulopinheiro.sampledb.persistence.entities.ProductCode</class>
-    <class>br.com.paulopinheiro.sampledb.persistence.entities.Manufacturer</class>
-    <class>br.com.paulopinheiro.sampledb.persistence.entities.PurchaseOrder</class>
-    <class>br.com.paulopinheiro.sampledb.persistence.entities.Product</class>
-    <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/sample"/>
-      <property name="javax.persistence.jdbc.user" value="app"/>
-      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.client.ClientAutoloadedDriver"/>
-      <property name="javax.persistence.jdbc.password" value="app"/>
-    </properties>
-  </persistence-unit>
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+    <persistence-unit name="sampledb-PU" transaction-type="JTA">
+        <jta-data-source>java:comp/env/jdbc/sample</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-database" value="Derby"/>
+        </properties>
+        <!--<provider>jakarta.persistence.spi.PersistenceProvider</provider>-->
+        <!--        <class>br.com.paulopinheiro.sampledb.persistence.entities.DiscountCode</class>
+        <class>br.com.paulopinheiro.sampledb.persistence.entities.MicroMarket</class>
+        <class>br.com.paulopinheiro.sampledb.persistence.entities.Customer</class>
+        <class>br.com.paulopinheiro.sampledb.persistence.entities.ProductCode</class>
+        <class>br.com.paulopinheiro.sampledb.persistence.entities.Manufacturer</class>
+        <class>br.com.paulopinheiro.sampledb.persistence.entities.PurchaseOrder</class>
+        <class>br.com.paulopinheiro.sampledb.persistence.entities.Product</class>
+        <properties>
+            <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/sample"/>
+            <property name="javax.persistence.jdbc.user" value="app"/>
+            <property name="javax.persistence.jdbc.driver" value="org.apache.derby.client.ClientAutoloadedDriver"/>
+            <property name="javax.persistence.jdbc.password" value="app"/>
+        </properties> -->
+    </persistence-unit>
 </persistence>

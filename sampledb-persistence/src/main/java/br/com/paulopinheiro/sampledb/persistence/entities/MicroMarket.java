@@ -1,30 +1,34 @@
 package br.com.paulopinheiro.sampledb.persistence.entities;
 
-import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Table(name = "MICRO_MARKET")
-@NamedQueries({
-    @NamedQuery(name = "MicroMarket.findAll", query = "SELECT m FROM MicroMarket m")})
+@Table(name = "micro_market")
 public class MicroMarket implements Serializable {
-
     private static final long serialVersionUID = 1L;
+
     @Id
-    @Basic(optional = false)
+    @Column(name="zip_code", length=10)
+    @Size(min=1, max=10)
     private String zipCode;
+    @Min(0)
     private Double radius;
+    @Column(name="area_length")
+    @Min(0)
     private Double areaLength;
+    @Column(name="area_width")
+    @Min(0)
     private Double areaWidth;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "zip")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "microMarket")
     private List<Customer> customerList;
 
     public MicroMarket() {

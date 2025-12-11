@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="primefaces">
+    <f:view>
+        <h:head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <title><ui:insert name="pageTitle">Sample DB Control System</ui:insert></title>
+        </h:head>
+
+        <h:body>
+            <div id="menuDiv">
+                <h:form id="menuForm">
+                    <p:menubar>
+                        <p:menuitem id="miHome" value="Home" outcome="/views/index.xhtml" />
+                        <p:submenu id="smSales" label="Sales">
+                            <p:menuitem id="miPurchaseOrder" value="Purchase Order" outcome="/views/operator/purchaseOrder.xhtml" />
+                        </p:submenu>
+                        <p:submenu id="smRegistration" label="Registration">
+                            <p:menuitem id="miManufacturer" value="Manufacturers" outcome="/views/admin/manufacturer.xhtml" />
+                            <p:menuitem id="miCustomer" value="Customers" outcome="/views/operator/customer.xhtml" />
+                        </p:submenu>
+                        <p:submenu id="smTable" label="Table">
+                            <p:menuitem id="miProductCode" value="Product Code" outcome="/views/admin/productCode.xhtml" />
+                            <p:menuitem id="miDiscountCode" value="Discount Code" outcome="/views/admin/discountCode.xhtml" />
+                            <p:menuitem id="miMicroMarket" value="Micro Market" outcome="/views/admin/microMarket.xhtml" />
+                            <p:menuitem id="miProduct" value="Products" outcome="/views/admin/product.xhtml" />
+                        </p:submenu>
+                    </p:menubar>
+                </h:form>
+            </div>
+            <div id="titleDiv" align="center">
+                <p:panel>
+                    <h3>Sample DB Control System</h3>
+                    <h4><ui:insert name="pageTitle">Page Title</ui:insert></h4>
+                </p:panel>
+            </div>
+            <div id="contentDiv">
+                <ui:insert name="content">Choose an option from the menu</ui:insert>
+            </div>
+            <div align="center" id="bottom">
+                <p:separator />
+                Developed by Paulo Pinheiro
+            </div>
+        </h:body>
+    </f:view>
+</html>

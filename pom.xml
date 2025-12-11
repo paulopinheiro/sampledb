@@ -4,16 +4,24 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>17</maven.compiler.release>
-        <project.version>1.0</project.version>
+        <maven.compiler.release>21</maven.compiler.release>
+        <jakartaee>10.0.0</jakartaee>
+        <revision>1</revision>
     </properties>
 
     <groupId>br.com.paulopinheiro</groupId>
     <artifactId>sampledb</artifactId>
-    <version>#{project.version}</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>${jakartaee}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -36,5 +44,6 @@
         <module>sampledb-persistence</module>
         <module>sampledb-core</module>
         <module>sampledb-web</module>
+        <module>sampledb-ear</module>
     </modules>
 </project>

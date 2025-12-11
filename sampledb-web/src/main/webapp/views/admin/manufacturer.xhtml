@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="primefaces"
+      xmlns:f="jakarta.faces.core">
+    <body>
+        <ui:composition template="/resources/templates/mainTemplate.xhtml">
+            <ui:define name="pageTitle">#{manufacturerMB.pageTitle}</ui:define>
+            <ui:define name="content">
+                <h:form id="registrationForm">
+                    <p:panelGrid columns="0" layout="tabular" styleClass="ui-noborder">
+                        <p:row>
+                            <p:column><p:outputLabel for="id" value="Id " /></p:column>
+                            <p:column colspan="7"><p:inputText id="id" value="#{manufacturerMB.manufacturer.manufacturerId}" size="10" /></p:column>
+                        </p:row>
+                        <p:row><p:column /><p:column colspan="7"><p:message for="id" /></p:column></p:row>
+                        <p:row>
+                            <p:column><p:outputLabel for="name" value="Name" /></p:column>
+                            <p:column colspan="7"><p:inputText label="Name" id="name" value="#{manufacturerMB.manufacturer.name}" size="30" /></p:column>
+                        </p:row>
+                        <p:row><p:column /><p:column colspan="7"><p:message for="name" /></p:column></p:row>
+                        <p:row>
+                            <p:column><p:outputLabel for="addressline1" value="Address" /></p:column>
+                            <p:column colspan="3"><p:inputText id="addressline1" label="Address" value="#{manufacturerMB.manufacturer.addressLine1}" size="30" /></p:column>
+                            <p:column colspan="4"><p:inputText id="addressline2" label="Address (cont)" value="#{manufacturerMB.manufacturer.addressLine2}" size="30" /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column />
+                            <p:column colspan="3"><p:message for="addressline1" /></p:column>
+                            <p:column colspan="4"><p:message for="addressline2" /></p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column><p:outputLabel for="city" value="City" /></p:column>
+                            <p:column colspan="3"><p:inputText id="city" label="City" value="#{manufacturerMB.manufacturer.city}" size="25" /></p:column>
+                            <p:column><p:outputLabel for="state" value="State" /></p:column>
+                            <p:column><p:inputText id="state" label="State" value="#{manufacturerMB.manufacturer.state}" size="2" /></p:column>
+                            <p:column><p:outputLabel for="zip" value="Zip" /></p:column>
+                            <p:column><p:inputText id="zip" label="Zip" value="#{manufacturerMB.manufacturer.zip}" size="10" /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column /><p:column colspan="3"><p:message for="city" /></p:column>
+                            <p:column /><p:column><p:message for="state" /></p:column>
+                            <p:column /><p:column><p:message for="zip" /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column><p:outputLabel for="phone" value="Phone" /></p:column>
+                            <p:column><p:inputText id="phone" label="Phone" value="#{manufacturerMB.manufacturer.phone}" size="12" /></p:column>
+                            <p:column><p:outputLabel for="fax" value="Fax" /></p:column>
+                            <p:column><p:inputText id="fax" label="Fax" value="#{manufacturerMB.manufacturer.fax}" size="10" /></p:column>
+                            <p:column><p:outputLabel for="email" value="e-mail" /></p:column>
+                            <p:column colspan="3"><p:inputText id="email" label="e-mail" value="#{manufacturerMB.manufacturer.email}" size="30" /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column /><p:column><p:message for="phone" /></p:column>
+                            <p:column /><p:column><p:message for="fax" /></p:column>
+                            <p:column /><p:column colspan="3"><p:message for="email" /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column><p:outputLabel for="rep" value="Representant" /></p:column>
+                            <p:column colspan="7"><p:inputText label="Representant" id="rep" value="#{manufacturerMB.manufacturer.rep}" size="30" /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column /><p:column colspan="7"><p:message for="rep" /></p:column>
+                        </p:row>
+                    </p:panelGrid>
+                    <p:panelGrid columns="3">
+                        <f:facet name="footer">
+                            <h:panelGroup style="align-content: center">
+                                <p:commandButton value="Save" process="@form" update="@form :messages :gmessages :listForm" actionListener="#{manufacturerMB.save}" />
+                                <p:commandButton value="New" update="@form :messages :gmessages" actionListener="#{manufacturerMB.clear}" />
+                                <p:commandButton value="Delete" onclick="PF('exclusionDialog').show();" disabled="#{manufacturerMB.newRegistration}" /> 
+                            </h:panelGroup>
+                        </f:facet>
+                    </p:panelGrid>
+                    <br />
+                    <p:dialog style="text-align: center;" widgetVar="exclusionDialog" header="Confirm Exclusion" modal="true" resizable="false">
+                             <h:outputText value="Are you sure you want to exclude this manufacturer?" /><br /> <br />
+                             <p:commandButton value="Yes" process="@form" actionListener="#{manufacturerMB.remove}" oncomplete="PF('exclusionDialog').hide()" update="@form :messages :gmessages :listForm" />
+                             <p:commandButton value="No" onclick="PF('exclusionDialog').hide()" type="button" />
+                    </p:dialog>
+                </h:form>
+                <p:growl id="gmessages" globalOnly="true" />
+                <p:messages id="messages" globalOnly="true" />
+
+                <h:form id="listForm">
+                    <p:dataTable id="dtManufacturer" value="#{manufacturerMB.manufacturersList}" var="manufacturer">
+                        <p:column>
+                            <f:facet name="header">Name</f:facet>
+                            <p:commandLink value="#{manufacturer.name}" update=":registrationForm">
+                                <f:setPropertyActionListener value="#{manufacturer}" target="#{manufacturerMB.manufacturer}" />
+                            </p:commandLink>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">Representant</f:facet>
+                            <h:outputText value="#{manufacturer.rep}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">Phone</f:facet>
+                            <h:outputText value="#{manufacturer.phone}" />
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -3,24 +3,24 @@ package br.com.paulopinheiro.sampledb.persistence.entities;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
-import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "DISCOUNT_CODE")
-@NamedQueries({
-    @NamedQuery(name = "DiscountCode.findAll", query = "SELECT d FROM DiscountCode d")})
+@Table(name = "discount_code")
 public class DiscountCode implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
+    @Size(min=1, max=1)
+    @Column(name="discount_code", length=1)
     private String discountCode;
+    @Min(0)
     private BigDecimal rate;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "discountCode")
     private List<Customer> customerList;

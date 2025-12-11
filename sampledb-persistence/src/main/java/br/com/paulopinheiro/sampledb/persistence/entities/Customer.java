@@ -1,41 +1,46 @@
 package br.com.paulopinheiro.sampledb.persistence.entities;
 
-import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
 
 
 @Entity
-@Table(name = "CUSTOMER")
-@NamedQueries({
-    @NamedQuery(name = "Customer.findAll", query = "SELECT c FROM Customer c")})
 public class Customer implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
+    @Column(name="customer_id")
     private Integer customerId;
+    @NotNull @Size(min=1, max=30)
     private String name;
-    @Column(name = "ADDRESSLINE1")
+    @NotNull @Size(min=1, max=30)
     private String addressLine1;
-    @Column(name = "ADDRESSLINE2")
+    @Size(max=30)
     private String addressLine2;
+    @Size(max=25)
     private String city;
+    @Size(min=2, max=2)
     private String state;
+    @Size(max=12)
     private String phone;
+    @Size(max=12)
     private String fax;
+    @Size(max=40)
+    @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")
     private String email;
+    @Min(0)
     private Integer creditLimit;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customerId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
     private List<PurchaseOrder> purchaseOrderList;
     @JoinColumn(name = "DISCOUNT_CODE", referencedColumnName = "DISCOUNT_CODE")
     @ManyToOne(optional = false)

@@ -1,36 +1,41 @@
 package br.com.paulopinheiro.sampledb.persistence.entities;
 
-import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "PURCHASE_ORDER")
-@NamedQueries({
-    @NamedQuery(name = "PurchaseOrder.findAll", query = "SELECT p FROM PurchaseOrder p")})
+@Table(name = "purchase_order")
 public class PurchaseOrder implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
+    @Column(name="order_num")
     private Integer orderNum;
+    @NotNull @Min(0)
     private Short quantity;
+    @Min(0)
+    @Column(name="shipping_cost")
     private BigDecimal shippingCost;
+    @NotNull
+    @Column(name="sales_date")
     private LocalDate salesDate;
+    @Column(name="shipping_date")
     private LocalDate shippingDate;
+    @Column(name="freight_company")
     private String freightCompany;
-    @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "CUSTOMER_ID")
+    @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
     @ManyToOne(optional = false)
     private Customer customer;
-    @JoinColumn(name = "PRODUCT_ID", referencedColumnName = "PRODUCT_ID")
+    @JoinColumn(name = "product_id", referencedColumnName = "product_id")
     @ManyToOne(optional = false)
     private Product product;
 

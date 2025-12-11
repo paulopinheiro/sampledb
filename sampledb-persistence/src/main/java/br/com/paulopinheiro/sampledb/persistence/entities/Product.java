@@ -3,16 +3,17 @@ package br.com.paulopinheiro.sampledb.persistence.entities;
 import br.com.paulopinheiro.sampledb.persistence.converters.BooleanToStringConverter;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -34,26 +35,27 @@ import java.util.Optional;
     AND   new.quantity_on_hand=0;
  */
 @Entity
-@Table(name = "PRODUCT")
-@NamedQueries({
-    @NamedQuery(name = "Product.findAll", query = "SELECT p FROM Product p")})
 public class Product implements Serializable {
-
     private static final long serialVersionUID = 1L;
+
     @Id
-    @Basic(optional = false)
+    @Column(name="product_id")
     private Integer productId;
-    @Basic(optional=false)
+    @NotNull @Min(0)
+    @Column(name="purchase_cost", nullable=false)
     private BigDecimal purchaseCost;
-    @Basic(optional=false)
+    @NotNull @Min(0)
+    @Column(name="quantity_on_hand")
     private Integer quantityOnHand;
-    @Basic(optional=false)
+    @NotNull @Min(0)
+    @Column(nullable=false)
     private BigDecimal markup;
     @Convert(converter = BooleanToStringConverter.class)
     @Basic(optional=false)
     private Boolean available;
+    @NotNull @Size(min=1, max=50)
     private String description;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "productId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
     private List<PurchaseOrder> purchaseOrderList;
     @JoinColumn(name = "MANUFACTURER_ID", referencedColumnName = "MANUFACTURER_ID")
     @ManyToOne(optional = false)

@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="primefaces"
+      xmlns:f="jakarta.faces.core">
+    <body>
+        <ui:composition template="/resources/templates/mainTemplate.xhtml">
+            <ui:define name="pageTitle">#{manufacturerMB.pageTitle}</ui:define>
+            <ui:define name="content">
+                <h:form id="registrationForm">
+                    <p:panel>
+                        <table>
+                            <tr>
+                                <td><p:outputLabel for="id" value="Id " /></td>
+                                <td><h:outputText id="id" value="#{manufacturerMB.manufacturer.manufacturerId}" /></td>
+                                <td><p:message for="id" /></td>
+                            </tr>
+                            <tr>
+                                <td><p:outputLabel for="name" value="Name" /></td>
+                                <td><p:inputText label="Name" id="name" value="#{manufacturerMB.manufacturer.name}" size="30" /></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><p:message for="name" /></td>
+                            </tr>
+                            <tr>
+                                <td><p:outputLabel for="addressline1" value="Address" /></td>
+                                <td><p:inputText id="addressline1" label="Address" value="#{manufacturerMB.manufacturer.addressLine1}" size="30" /></td>
+                                <td><p:inputText id="addressline2" label="Address (cont)" value="#{manufacturerMB.manufacturer.addressLine2}" size="30" /></td>
+
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><p:message for="addressline1" /></td>
+                                <td><p:message for="addressline2" /></td>
+                            </tr>
+                            <tr>
+                                <td><p:outputLabel for="city" value="City" /></td>
+                                <td><p:inputText id="city" label="City" value="#{manufacturerMB.manufacturer.city}" size="25" /></td>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td><p:outputLabel for="state" value="State" /></td>
+                                            <td><p:inputText id="state" label="State" value="#{manufacturerMB.manufacturer.state}" size="2" /></td>
+                                            <td><p:outputLabel for="zip" value="Zip" /></td>
+                                            <td><p:inputText id="zip" label="Zip" value="#{manufacturerMB.manufacturer.zip}" size="10" /></td>            
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td><p:message for="state" /></td>
+                                            <td></td>
+                                            <td><p:message for="zip" /></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><p:message for="city" /></td>
+                            </tr>
+                            <tr>
+                                <td><p:outputLabel for="phone" value="Phone" /></td>
+                                <td><p:inputText id="phone" label="Phone" value="#{manufacturerMB.manufacturer.phone}" size="12" /></td>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td><p:outputLabel for="fax" value="Fax" /></td>
+                                            <td><p:inputText id="fax" label="Fax" value="#{manufacturerMB.manufacturer.fax}" size="10" /></td>
+                                            <td><p:message for="fax" /></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><p:message for="phone" /></td>
+                            </tr>
+                            <tr>
+                                <td><p:outputLabel for="email" value="e-mail" /></td>
+                                <td><p:inputText id="email" label="e-mail" value="#{manufacturerMB.manufacturer.email}" size="30" /></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><p:message for="email" /></td>
+                            </tr>
+                            <tr>
+                                <td><p:outputLabel for="rep" value="Representant" /></td>
+                                <td><p:inputText id="rep" label="Representant" value="#{manufacturerMB.manufacturer.rep}" /></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><p:message for="rep" /></td>
+                            </tr>
+                        </table>
+                    </p:panel>
+                    <!--<p:panelGrid columns="3">
+                        <f:facet name="footer">
+                            <h:panelGroup style="align-content: center">
+                                <p:commandButton value="Save" process="@form" update="@form :messages :gmessages :listForm" actionListener="#{equipmentTypeMB.save}" />
+                                <p:commandButton value="New" update="@form :messages :gmessages" actionListener="#{equipmentTypeMB.clear}" />
+                                <p:commandButton value="Delete" onclick="PF('exclusionDialog').show();" disabled="#{equipmentTypeMB.newRegistration}" /> 
+                            </h:panelGroup>
+                        </f:facet>
+                    </p:panelGrid>-->
+                    <br />
+                    <!--     <p:dialog style="text-align: center;" widgetVar="exclusionDialog" header="Confirm Exclusion" modal="true" resizable="false">
+                             <h:outputText value="Are you sure you want to exclude this equipment type?" /><br /> <br />
+                             <p:commandButton value="Yes" process="@form" actionListener="#{equipmentTypeMB.remove}" oncomplete="PF('exclusionDialog').hide()" update="@form :messages :gmessages :listForm" />
+                             <p:commandButton value="No" onclick="PF('exclusionDialog').hide()" type="button" />
+                         </p:dialog> -->
+                </h:form>
+                <p:growl id="gmessages" globalOnly="true" />
+                <p:messages id="messages" globalOnly="true" />
+                <br />
+                <h:form id="listForm">
+                    <p:dataTable id="dtManufacturer" value="#{manufacturerMB.manufacturersList}" var="manufacturer">
+                        <p:column>
+                            <f:facet name="header">Name</f:facet>
+                            <h:outputText value="#{manufacturer.name}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">Representant</f:facet>
+                            <h:outputText value="#{manufacturer.rep}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">Phone</f:facet>
+                            <h:outputText value="#{manufacturer.phone}" />
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

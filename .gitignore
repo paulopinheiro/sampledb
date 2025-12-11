@@ -38,3 +38,4 @@ nbactions.xml
 /sampledb-persistence/target/
 /sampledb-core/target/
 /sampledb-web/target/
+/sampledb-ear/target/

@@ -5,26 +5,24 @@
     <parent>
         <artifactId>sampledb</artifactId>
         <groupId>br.com.paulopinheiro</groupId>
-        <version>#{project.version}</version>
+        <version>${revision}</version>
     </parent>
 
-    <groupId>br.com.paulopinheiro</groupId>
     <artifactId>sampledb-web</artifactId>
-    <version>#{project.version}</version>
     <packaging>war</packaging>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <jakartaee>10.0.0</jakartaee>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>br.com.paulopinheiro</groupId>
+            <artifactId>sampledb-persistence</artifactId>
+            <version>${revision}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>br.com.paulopinheiro</groupId>
             <artifactId>sampledb-core</artifactId>
-            <version>#{project.version}</version>
+            <version>${revision}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -34,10 +32,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId>
-            <version>${jakartaee}</version>
-            <scope>provided</scope>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>15.0.8</version>
+            <classifier>jakarta</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.primefaces.themes</groupId>
+            <artifactId>all-themes</artifactId>
+            <version>1.1.0</version>
         </dependency>
     </dependencies>
     

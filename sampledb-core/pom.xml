@@ -4,18 +4,18 @@
     <parent>
         <groupId>br.com.paulopinheiro</groupId>
         <artifactId>sampledb</artifactId>
-        <version>#{project.version}</version>
+        <version>${revision}</version>
     </parent>
 
-    <groupId>br.com.paulopinheiro</groupId>
     <artifactId>sampledb-core</artifactId>
-    <version>#{project.version}</version>
-    <packaging>jar</packaging>
+    <packaging>ejb</packaging>
+
     <dependencies>
         <dependency>
             <groupId>br.com.paulopinheiro</groupId>
             <artifactId>sampledb-persistence</artifactId>
-            <version>#{project.version}</version>
+            <version>${revision}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

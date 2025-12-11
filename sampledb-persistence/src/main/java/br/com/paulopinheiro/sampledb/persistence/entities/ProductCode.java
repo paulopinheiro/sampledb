@@ -1,32 +1,32 @@
 package br.com.paulopinheiro.sampledb.persistence.entities;
 
-import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Table(name = "PRODUCT_CODE")
-@NamedQueries({
-    @NamedQuery(name = "ProductCode.findAll", query = "SELECT p FROM ProductCode p")})
+@Table(name = "product_code")
 public class ProductCode implements Serializable {
-
     private static final long serialVersionUID = 1L;
+
     @Id
-    @Basic(optional = false)
+    @Column(name="prod_code")
+    @Size(min=2, max=2)
     private String prodCode;
-    @Basic(optional = false)
-    @JoinColumn(name = "DISCOUNT_CODE", referencedColumnName = "DISCOUNT_CODE")
+    @NotNull
+    @JoinColumn(name = "discount_code", referencedColumnName = "discount_code")
     @ManyToOne(optional = false)
     private DiscountCode discountCode;
+    @Size(max=10)
     private String description;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "productCode")
     private List<Product> productList;

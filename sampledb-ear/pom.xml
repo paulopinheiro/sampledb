@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>br.com.paulopinheiro</groupId>
+        <artifactId>sampledb</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <groupId>br.com.paulopinheiro</groupId>
+    <artifactId>sampledb-ear</artifactId>
+    <packaging>ear</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>br.com.paulopinheiro</groupId>
+            <artifactId>sampledb-persistence</artifactId>
+            <version>${revision}</version>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>br.com.paulopinheiro</groupId>
+            <artifactId>sampledb-core</artifactId>
+            <version>${revision}</version>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>br.com.paulopinheiro</groupId>
+            <artifactId>sampledb-web</artifactId>
+            <version>${revision}</version>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+    <build>
+        <finalName>sampledb</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <version>10</version>
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <modules>
+                        <ejbModule>
+                            <groupId>br.com.paulopinheiro</groupId>
+                            <artifactId>sampledb-persistence</artifactId>
+                            <bundleFileName>sampledb-persistence.jar</bundleFileName>
+                        </ejbModule><ejbModule>
+                            <groupId>br.com.paulopinheiro</groupId>
+                            <artifactId>sampledb-core</artifactId>
+                            <bundleFileName>sampledb-core.jar</bundleFileName>
+                        </ejbModule>
+                        <webModule>
+                            <groupId>br.com.paulopinheiro</groupId>
+                            <artifactId>sampledb-web</artifactId>
+                            <bundleFileName>sampledb-web.war</bundleFileName>
+                            <contextRoot>/sampledb</contextRoot>
+                        </webModule>
+                    </modules>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

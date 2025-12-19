@@ -21,8 +21,10 @@ public class DefaultManufacturerService implements ManufacturerService {
     public void saveManufacturer(Manufacturer manufacturer) {
         if (Optional.ofNullable(manufacturer).isEmpty()) throw new IllegalArgumentException("Manufacturer can't be null");
 
-        if (Optional.ofNullable(manufacturer.getManufacturerId()).isEmpty()) dao.create(manufacturer);
-        else dao.edit(manufacturer);
+        if (Optional.ofNullable(manufacturer.getManufacturerId()).isEmpty()) {
+            manufacturer.setManufacturerId(dao.getNextAvailableId());
+            dao.create(manufacturer);
+        } else dao.edit(manufacturer);
     }
 
     @Override

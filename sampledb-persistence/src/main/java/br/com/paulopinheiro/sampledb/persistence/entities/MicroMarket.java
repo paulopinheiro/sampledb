@@ -10,6 +10,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Table(name = "micro_market")
@@ -31,68 +33,36 @@ public class MicroMarket implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "microMarket")
     private List<Customer> customerList;
 
-    public MicroMarket() {
-    }
+    public MicroMarket() {}
 
-    public MicroMarket(String zipCode) {
-        this.zipCode = zipCode;
-    }
+    public String getZipCode() {return zipCode;    }
+    public void setZipCode(String zipCode) {this.zipCode = zipCode;}
 
-    public String getZipCode() {
-        return zipCode;
-    }
+    public Double getRadius() {return radius;}
+    public void setRadius(Double radius) {this.radius = radius;}
 
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
+    public Double getAreaLength() {return areaLength;}
+    public void setAreaLength(Double areaLength) {this.areaLength = areaLength;}
 
-    public Double getRadius() {
-        return radius;
-    }
+    public Double getAreaWidth() {return areaWidth;}
+    public void setAreaWidth(Double areaWidth) {this.areaWidth = areaWidth;}
 
-    public void setRadius(Double radius) {
-        this.radius = radius;
-    }
-
-    public Double getAreaLength() {
-        return areaLength;
-    }
-
-    public void setAreaLength(Double areaLength) {
-        this.areaLength = areaLength;
-    }
-
-    public Double getAreaWidth() {
-        return areaWidth;
-    }
-
-    public void setAreaWidth(Double areaWidth) {
-        this.areaWidth = areaWidth;
-    }
-
-    public List<Customer> getCustomerList() {
-        return customerList;
-    }
-
-    public void setCustomerList(List<Customer> customerList) {
-        this.customerList = customerList;
-    }
+    public List<Customer> getCustomerList() {return customerList;}
+    public void setCustomerList(List<Customer> customerList) {this.customerList = customerList;}
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (zipCode != null ? zipCode.hashCode() : 0);
-        return hash;
+        return Objects.hash(zipCode);
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof MicroMarket)) {
-            return false;
+        if (Optional.ofNullable(object).isEmpty()) return false;
+
+        if (object instanceof MicroMarket other) {
+            return Objects.equals(this.getZipCode(), other.getZipCode());
         }
-        MicroMarket other = (MicroMarket) object;
-        return !((this.zipCode == null && other.zipCode != null) || (this.zipCode != null && !this.zipCode.equals(other.zipCode)));
+        return false;
     }
 
     @Override

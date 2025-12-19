@@ -1,21 +1,73 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="jakarta.faces.facelets">
-
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="primefaces"
+      xmlns:f="jakarta.faces.core">
     <body>
-
         <ui:composition template="./../../resources/templates/mainTemplate.xhtml">
-
-            <ui:define name="pageTitle">
-                Micro Market Table
-            </ui:define>
-
+            <ui:define name="pageTitle">Micro Market Table</ui:define>
             <ui:define name="content">
-                content
+                <h:form id="registrationForm">
+                    <p:panelGrid columns="3">
+                        <p:outputLabel for="zipCode" value="Zip code" />
+                        <p:inputText id="zipCode" value="#{microMarketMB.microMarket.zipCode}" size="20" />
+                        <p:message for="zipCode" />
+
+                        <p:outputLabel for="radius" value="Radius" />
+                        <p:inputText id="radius" value="#{microMarketMB.microMarket.radius}" size="10" />
+                        <p:message for="radius" />
+
+                        <p:outputLabel for="areaLength" value="Area length" />
+                        <p:inputText id="areaLength" value="#{microMarketMB.microMarket.areaLength}" size="10" />
+                        <p:message for="areaLength" />
+
+                        <p:outputLabel for="areaWidth" value="Area width" />
+                        <p:inputText id="areaWidth" value="#{microMarketMB.microMarket.areaWidth}" size="10" />
+                        <p:message for="areaWidth" />
+                    </p:panelGrid>
+                    <p:panelGrid columns="3">
+                        <f:facet name="footer">
+                            <h:panelGroup style="align-content: center">
+                                <p:commandButton value="Save" process="@form" update="@form :messages :gmessages :listForm" actionListener="#{microMarketMB.save}" />
+                                <p:commandButton value="New" update="@form :messages :gmessages" actionListener="#{microMarketMB.clear}" />
+                                <p:commandButton value="Delete" onclick="PF('exclusionDialog').show();" disabled="#{microMarketMB.newEntity}" /> 
+                            </h:panelGroup>
+                        </f:facet>
+                    </p:panelGrid>
+                    <br />
+                    <p:dialog style="text-align: center;" widgetVar="exclusionDialog" header="Confirm Exclusion" modal="true" resizable="false">
+                             <h:outputText value="Are you sure you want to exclude this micro market?" /><br /> <br />
+                             <p:commandButton value="Yes" process="@form" actionListener="#{microMarketMB.delete}" oncomplete="PF('exclusionDialog').hide()" update="@form :messages :gmessages :listForm" />
+                             <p:commandButton value="No" onclick="PF('exclusionDialog').hide()" type="button" />
+                    </p:dialog>
+                </h:form>
+                <p:growl id="gmessages" globalOnly="true" />
+                <p:messages id="messages" globalOnly="true" />
+                <h:form id="listForm">
+                    <p:dataTable value="#{microMarketMB.list}" var="microMarket">
+                        <p:column>
+                            <f:facet name="header">Zip Code</f:facet>
+                            <p:commandLink value="#{microMarket.zipCode}" update=":registrationForm">
+                                <f:setPropertyActionListener value="#{microMarket}" target="#{microMarketMB.microMarket}" />
+                            </p:commandLink>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">Radius</f:facet>
+                            <h:outputText value="#{microMarket.radius}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">Area length</f:facet>
+                            <h:outputText value="#{microMarket.areaLength}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">Area width</f:facet>
+                            <h:outputText value="#{microMarket.areaWidth}" />
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
             </ui:define>
-
         </ui:composition>
-
     </body>
 </html>

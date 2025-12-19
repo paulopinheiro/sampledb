@@ -87,12 +87,14 @@ public class Manufacturer implements Serializable {
     @Override
     public boolean equals(Object object) {
         if (this==object) return true;
-        if ((Optional.ofNullable(object).isEmpty()) || !(object instanceof Manufacturer))
-            return false;
 
-        Manufacturer other = (Manufacturer) object;
+        if (Optional.ofNullable(object).isEmpty()) return false;
+        
+        if (object instanceof Manufacturer other) {
+            return Objects.equals(this.getManufacturerId(), other.getManufacturerId());
+        }
 
-        return Objects.equals(this.getManufacturerId(), other.getManufacturerId());
+        return false;
     }
 
     @Override

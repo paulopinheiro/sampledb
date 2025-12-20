@@ -1,21 +1,94 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="jakarta.faces.facelets">
-
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="primefaces"
+      xmlns:f="jakarta.faces.core">
     <body>
-
         <ui:composition template="./../../resources/templates/mainTemplate.xhtml">
-
-            <ui:define name="pageTitle">
-                Products Registration
-            </ui:define>
-
+            <ui:define name="pageTitle">Products Registration</ui:define>
             <ui:define name="content">
-                content
+                <h:form id="registrationForm">
+                    <p:panelGrid columns="3">
+                        <p:outputLabel for="id" value="Id" />
+                        <p:inputText id="id" value="#{productMB.product.productId}" size="10" />
+                        <p:message for="id" />
+
+                        <p:outputLabel for="description" value="Description" />
+                        <p:inputText id="description" value="#{productMB.product.description}" size="50" />
+                        <p:message for="description" />
+
+                        <p:outputLabel for="productCode" value="Product code" />
+                        <p:selectOneMenu id="productCode" value="#{productMB.product.productCode}" converter="productCodeConverter">
+                            <f:selectItem noSelectionOption="true" itemLabel="--- Select One ---" />
+                            <f:selectItems value="#{productMB.productCodesList}" var="productCode" itemValue="#{productCode}" itemLabel="#{productCode}" />
+                        </p:selectOneMenu>
+                        <p:message for="productCode" />
+
+                        <p:outputLabel for="manufacturer" value="Manufacturer" />
+                        <p:selectOneMenu id="manufacturer" value="#{productMB.product.manufacturer}" converter="manufacturerConverter">
+                            <f:selectItem noSelectionOption="true" itemLabel="--- Select One ---" />
+                            <f:selectItems value="#{productMB.manufacturersList}" var="manufacturer" itemValue="#{manufacturer}" itemLabel="#{manufacturer}" />
+                        </p:selectOneMenu>
+                        <p:message for="manufacturer" />
+
+                        <p:outputLabel for="purchaseCost" value="Purchase cost" />
+                        <p:inputText id="purchaseCost" value="#{productMB.product.purchaseCost}" size="12" />
+                        <p:message for="purchaseCost" />
+
+                        <p:outputLabel for="markup" value="Mark-up" />
+                        <p:inputText id="markup" value="#{productMB.product.markup}" size="6" />
+                        <p:message for="markup" />
+
+                        <p:outputLabel for="quantityOnHand" value="Quantity on hand" />
+                        <p:inputText id="quantityOnHand" value="#{productMB.product.quantityOnHand}" size="10" />
+                        <p:message for="quantityOnHand" />
+
+                        <f:facet name="footer">
+                            <h:outputText value="Available" rendered="#{productMB.product.available}" />
+                            <h:outputText value="Not Available" rendered="#{!productMB.product.available}" />
+                            <h:inputHidden value="#{productMB.product.available}" />
+                        </f:facet>
+                    </p:panelGrid>
+
+                    <p:panelGrid columns="3">
+                        <f:facet name="footer">
+                            <h:panelGroup style="align-content: center">
+                                <p:commandButton value="Save" process="@form" update="@form :messages :gmessages :listForm" actionListener="#{productMB.save}" />
+                                <p:commandButton value="New" immediate="true" process="@this" update="@form :messages :gmessages" actionListener="#{productMB.clear}" />
+                                <p:commandButton value="Delete" onclick="PF('exclusionDialog').show();" disabled="#{productMB.newEntity}" /> 
+                            </h:panelGroup>
+                        </f:facet>
+                    </p:panelGrid>
+                    <br />
+                    <p:dialog style="text-align: center;" widgetVar="exclusionDialog" header="Confirm Exclusion" modal="true" resizable="false">
+                        <h:outputText value="Are you sure you want to exclude this product?" /><br /> <br />
+                        <p:commandButton value="Yes" process="@form" actionListener="#{productMB.delete}" oncomplete="PF('exclusionDialog').hide()" update="@form :messages :gmessages :listForm" />
+                        <p:commandButton value="No" onclick="PF('exclusionDialog').hide()" type="button" />
+                    </p:dialog>
+                </h:form>
+                <p:growl id="gmessages" globalOnly="true" />
+                <p:messages id="messages" globalOnly="true" />
+                <h:form id="listForm">
+                    <p:dataTable value="#{productMB.list}" var="product">
+                        <p:column>
+                            <f:facet name="header">Zip Code</f:facet>
+                            <p:commandLink value="#{product.description}" update=":registrationForm">
+                                <f:setPropertyActionListener value="#{product}" target="#{productMB.product}" />
+                            </p:commandLink>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">Product Code</f:facet>
+                            <h:outputText value="#{product.productCode}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">Manufacturer</f:facet>
+                            <h:outputText value="#{product.manufacturer}" />
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
             </ui:define>
-
         </ui:composition>
-
     </body>
 </html>

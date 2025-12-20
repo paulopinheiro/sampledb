@@ -99,6 +99,6 @@ public class Manufacturer implements Serializable {
 
     @Override
     public String toString() {
-        return manufacturerId + " (" + rep + ")";
+        return name + " (" + rep + ")";
     }
 }

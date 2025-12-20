@@ -1,21 +1,127 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="jakarta.faces.facelets">
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="primefaces"
+      xmlns:f="jakarta.faces.core">
 
     <body>
-
         <ui:composition template="./../../resources/templates/mainTemplate.xhtml">
-
-            <ui:define name="pageTitle">
-                Customers Registration
-            </ui:define>
-
+            <ui:define name="pageTitle">Customers Registration</ui:define>
             <ui:define name="content">
-                content
+                <h:form id="registrationForm">
+                    <p:panelGrid columns="0" layout="tabular" styleClass="ui-noborder">
+                        <p:row>
+                            <p:column><p:outputLabel for="id" value="Id " /></p:column>
+                            <p:column colspan="7"><p:inputText id="id" value="#{customerMB.customer.customerId}" size="10" /></p:column>
+                        </p:row>
+                        <p:row><p:column /><p:column colspan="7"><p:message for="id" /></p:column></p:row>
+                        <p:row>
+                            <p:column><p:outputLabel for="name" value="Name" /></p:column>
+                            <p:column colspan="7"><p:inputText label="Name" id="name" value="#{customerMB.customer.name}" size="30" /></p:column>
+                        </p:row>
+                        <p:row><p:column /><p:column colspan="7"><p:message for="name" /></p:column></p:row>
+                        <p:row>
+                            <p:column><p:outputLabel for="addressline1" value="Address" /></p:column>
+                            <p:column colspan="3"><p:inputText id="addressline1" label="Address" value="#{customerMB.customer.addressLine1}" size="30" /></p:column>
+                            <p:column colspan="4"><p:inputText id="addressline2" label="Address (cont)" value="#{customerMB.customer.addressLine2}" size="30" /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column />
+                            <p:column colspan="3"><p:message for="addressline1" /></p:column>
+                            <p:column colspan="4"><p:message for="addressline2" /></p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column><p:outputLabel for="city" value="City" /></p:column>
+                            <p:column colspan="3"><p:inputText id="city" label="City" value="#{customerMB.customer.city}" size="25" /></p:column>
+                            <p:column><p:outputLabel for="state" value="State" /></p:column>
+                            <p:column><p:inputText id="state" label="State" value="#{customerMB.customer.state}" size="2" /></p:column>
+                            <p:column><p:outputLabel for="microMarket" value="Zip (micro market)" /></p:column>
+                            <p:column>
+                                <p:selectOneMenu id="microMarket" value="#{customerMB.customer.microMarket}" converter="microMarketConverter">
+                                    <f:selectItem noSelectionOption="true" itemLabel="--- Select One ---" />
+                                    <f:selectItems value="#{customerMB.microMarkets}" var="microMarket" itemValue="#{microMarket}" itemLabel="#{microMarket}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column /><p:column colspan="3"><p:message for="city" /></p:column>
+                            <p:column /><p:column><p:message for="state" /></p:column>
+                            <p:column /><p:column><p:message for="microMarket" /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column><p:outputLabel for="phone" value="Phone" /></p:column>
+                            <p:column><p:inputText id="phone" label="Phone" value="#{customerMB.customer.phone}" size="12" /></p:column>
+                            <p:column><p:outputLabel for="fax" value="Fax" /></p:column>
+                            <p:column><p:inputText id="fax" label="Fax" value="#{customerMB.customer.fax}" size="10" /></p:column>
+                            <p:column><p:outputLabel for="email" value="e-mail" /></p:column>
+                            <p:column colspan="3"><p:inputText id="email" label="e-mail" value="#{customerMB.customer.email}" size="30" /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column /><p:column><p:message for="phone" /></p:column>
+                            <p:column /><p:column><p:message for="fax" /></p:column>
+                            <p:column /><p:column colspan="3"><p:message for="email" /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column><p:outputLabel for="creditLimit" value="CreditLimit" /></p:column>
+                            <p:column colspan="7"><p:inputText label="Credit Limit" id="creditLimit" value="#{customerMB.customer.creditLimit}" size="30" /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column /><p:column colspan="7"><p:message for="creditLimit" /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column><p:outputLabel for="discountCode" value="Discount code" /></p:column>
+                            <p:column colspan="7">
+                                <p:selectOneMenu id="discountCode" value="#{customerMB.customer.discountCode}" converter="discountCodeConverter">
+                                    <f:selectItem noSelectionOption="true" itemLabel="--- Select One ---" />
+                                    <f:selectItems value="#{customerMB.discountCodes}" var="discountCode" itemValue="#{discountCode}" itemLabel="#{discountCode}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column /><p:column colspan="7"><p:message for="discountCode" /></p:column>
+                        </p:row>
+                    </p:panelGrid>
+                    <p:panelGrid columns="3">
+                        <f:facet name="footer">
+                            <h:panelGroup style="align-content: center">
+                                <p:commandButton value="Save" process="@form" update="@form :messages :gmessages :listForm" actionListener="#{customerMB.save}" />
+                                <p:commandButton value="New" immediate="true" process="@this" update="@form :messages :gmessages" actionListener="#{customerMB.clear}" />
+                                <p:commandButton value="Delete" onclick="PF('exclusionDialog').show();" disabled="#{customerMB.newEntity}" /> 
+                            </h:panelGroup>
+                        </f:facet>
+                    </p:panelGrid>
+                    <br />
+                    <p:dialog style="text-align: center;" widgetVar="exclusionDialog" header="Confirm Exclusion" modal="true" resizable="false">
+                             <h:outputText value="Are you sure you want to exclude this customer?" /><br /> <br />
+                             <p:commandButton value="Yes" process="@form" actionListener="#{customerMB.delete}" oncomplete="PF('exclusionDialog').hide()" update="@form :messages :gmessages :listForm" />
+                             <p:commandButton value="No" onclick="PF('exclusionDialog').hide()" type="button" />
+                    </p:dialog>
+                </h:form>
+                <p:growl id="gmessages" globalOnly="true" />
+                <p:messages id="messages" globalOnly="true" />
+
+                <h:form id="listForm">
+                    <p:dataTable id="dtCustomer" value="#{customerMB.list}" var="customer">
+                        <p:column>
+                            <f:facet name="header">Name</f:facet>
+                            <p:commandLink value="#{customer.name}" update=":registrationForm">
+                                <f:setPropertyActionListener value="#{customer}" target="#{customerMB.customer}" />
+                            </p:commandLink>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">e-mail</f:facet>
+                            <h:outputText value="#{customer.email}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">Phone</f:facet>
+                            <h:outputText value="#{customer.phone}" />
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
             </ui:define>
-
         </ui:composition>
-
     </body>
 </html>

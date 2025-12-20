@@ -70,7 +70,7 @@
                         <f:facet name="footer">
                             <h:panelGroup style="align-content: center">
                                 <p:commandButton value="Save" process="@form" update="@form :messages :gmessages :listForm" actionListener="#{manufacturerMB.save}" />
-                                <p:commandButton value="New" update="@form :messages :gmessages" actionListener="#{manufacturerMB.clear}" />
+                                <p:commandButton value="New" immediate="true" process="@this" update="@form :messages :gmessages" actionListener="#{manufacturerMB.clear}" />
                                 <p:commandButton value="Delete" onclick="PF('exclusionDialog').show();" disabled="#{manufacturerMB.newRegistration}" /> 
                             </h:panelGroup>
                         </f:facet>

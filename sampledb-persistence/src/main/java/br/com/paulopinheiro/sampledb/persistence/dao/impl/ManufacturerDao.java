@@ -12,8 +12,7 @@ import java.util.Optional;
 
 @Stateless
 public class ManufacturerDao extends AbstractDao<Manufacturer> {
-    @PersistenceContext(name="sampledb-PU")
-    private EntityManager em;
+    @PersistenceContext(name="sampledb-PU") private EntityManager em;
 
     public ManufacturerDao() {
         super(Manufacturer.class);

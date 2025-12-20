@@ -1,17 +1,16 @@
 package br.com.paulopinheiro.sampledb.persistence.entities;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Table(name = "product_code")
@@ -28,67 +27,30 @@ public class ProductCode implements Serializable {
     private DiscountCode discountCode;
     @Size(max=10)
     private String description;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "productCode")
-    private List<Product> productList;
 
     public ProductCode() {}
 
-    public ProductCode(String prodCode) {
-        this.prodCode = prodCode;
-    }
+    public String getProdCode() {return prodCode;}
+    public void setProdCode(String prodCode) {this.prodCode = prodCode;}
 
-    public ProductCode(String prodCode, DiscountCode discountCode) {
-        this.prodCode = prodCode;
-        this.discountCode = discountCode;
-    }
-
-    public String getProdCode() {
-        return prodCode;
-    }
-
-    public void setProdCode(String prodCode) {
-        this.prodCode = prodCode;
-    }
-
-    public DiscountCode getDiscountCode() {
-        return discountCode;
-    }
-
-    public void setDiscountCode(DiscountCode discountCode) {
-        this.discountCode = discountCode;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<Product> getProductList() {
-        return productList;
-    }
-
-    public void setProductList(List<Product> productList) {
-        this.productList = productList;
-    }
+    public DiscountCode getDiscountCode() {return discountCode;}
+    public void setDiscountCode(DiscountCode discountCode) {this.discountCode = discountCode;}
+    
+    public String getDescription() {return description;}
+    public void setDescription(String description) {this.description = description;}
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (prodCode != null ? prodCode.hashCode() : 0);
-        return hash;
-    }
+    public int hashCode() {return Objects.hash(prodCode);}
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ProductCode)) {
-            return false;
-        }
-        ProductCode other = (ProductCode) object;
-        return !((this.prodCode == null && other.prodCode != null) || (this.prodCode != null && !this.prodCode.equals(other.prodCode)));
+        if (this==object) return true;
+        if (Optional.ofNullable(object).isEmpty()) return false;
+
+        if (object instanceof ProductCode other)
+            return Objects.equals(this.getProdCode(), other.getProdCode());
+
+        return false;
     }
 
     @Override

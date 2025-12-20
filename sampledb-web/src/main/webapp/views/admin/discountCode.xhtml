@@ -24,7 +24,7 @@
                         <f:facet name="footer">
                             <h:panelGroup style="align-content: center">
                                 <p:commandButton value="Save" process="@form" update="@form :messages :gmessages :listForm" actionListener="#{discountCodeMB.save}" />
-                                <p:commandButton value="New" update="@form :messages :gmessages" actionListener="#{discountCodeMB.clear}" />
+                                <p:commandButton value="New" immediate="true" process="@this" update="@form :messages :gmessages" actionListener="#{discountCodeMB.clear}" />
                                 <p:commandButton value="Delete" onclick="PF('exclusionDialog').show();" disabled="#{discountCodeMB.newEntity}" /> 
                             </h:panelGroup>
                         </f:facet>

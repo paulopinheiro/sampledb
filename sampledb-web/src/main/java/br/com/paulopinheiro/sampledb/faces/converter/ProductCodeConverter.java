@@ -1,6 +1,6 @@
 package br.com.paulopinheiro.sampledb.faces.converter;
 
-import br.com.paulopinheiro.sampledb.persistence.entities.ProductCode;
+import br.com.paulopinheiro.sampledb.persistence.entity.ProductCode;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.component.UISelectItems;
 import jakarta.faces.component.UISelectOne;

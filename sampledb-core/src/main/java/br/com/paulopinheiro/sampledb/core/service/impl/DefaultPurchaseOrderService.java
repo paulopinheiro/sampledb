@@ -1,21 +1,27 @@
 package br.com.paulopinheiro.sampledb.core.service.impl;
 
 import br.com.paulopinheiro.sampledb.core.service.PurchaseOrderService;
+import br.com.paulopinheiro.sampledb.persistence.dao.impl.PurchaseOrderDao;
 import br.com.paulopinheiro.sampledb.persistence.entity.Customer;
 import br.com.paulopinheiro.sampledb.persistence.entity.Manufacturer;
 import br.com.paulopinheiro.sampledb.persistence.entity.MicroMarket;
 import br.com.paulopinheiro.sampledb.persistence.entity.Product;
 import br.com.paulopinheiro.sampledb.persistence.entity.ProductCode;
 import br.com.paulopinheiro.sampledb.persistence.entity.PurchaseOrder;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
+@Stateless
 public class DefaultPurchaseOrderService implements PurchaseOrderService {
+    @EJB private PurchaseOrderDao dao;
 
     @Override
     public List<PurchaseOrder> getAllOrders() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return dao.findAll();
     }
 
     @Override
@@ -55,17 +61,22 @@ public class DefaultPurchaseOrderService implements PurchaseOrderService {
 
     @Override
     public void saveOrder(PurchaseOrder purchaseOrder) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if (Optional.ofNullable(purchaseOrder).isEmpty()) throw new IllegalArgumentException("Purchase order can't be null.");
+
+        if (Optional.ofNullable(purchaseOrder.getOrderNum()).isEmpty()) dao.create(purchaseOrder);
+        else dao.edit(purchaseOrder);
     }
 
     @Override
     public PurchaseOrder getOrderByNum(Integer orderNum) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return dao.find(orderNum);
     }
 
     @Override
     public void removeOrder(PurchaseOrder purchaseOrder) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if (Optional.ofNullable(purchaseOrder).isEmpty()) throw new IllegalArgumentException("Purchase order can't be null.");
+
+        dao.remove(purchaseOrder);
     }
     
 }

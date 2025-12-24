@@ -1,8 +1,8 @@
-package br.com.paulopinheiro.sampledb.core.services.impl;
+package br.com.paulopinheiro.sampledb.core.service.impl;
 
-import br.com.paulopinheiro.sampledb.core.services.MicroMarketService;
+import br.com.paulopinheiro.sampledb.core.service.MicroMarketService;
 import br.com.paulopinheiro.sampledb.persistence.dao.impl.MicroMarketDao;
-import br.com.paulopinheiro.sampledb.persistence.entities.MicroMarket;
+import br.com.paulopinheiro.sampledb.persistence.entity.MicroMarket;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import java.util.List;

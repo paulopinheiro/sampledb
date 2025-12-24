@@ -1,4 +1,4 @@
-package br.com.paulopinheiro.sampledb.persistence.entities;
+package br.com.paulopinheiro.sampledb.persistence.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

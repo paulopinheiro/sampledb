@@ -1,6 +1,6 @@
-package br.com.paulopinheiro.sampledb.core.services;
+package br.com.paulopinheiro.sampledb.core.service;
 
-import br.com.paulopinheiro.sampledb.persistence.entities.Product;
+import br.com.paulopinheiro.sampledb.persistence.entity.Product;
 import java.util.List;
 
 public interface ProductService {

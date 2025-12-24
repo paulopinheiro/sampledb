@@ -1,4 +1,4 @@
-package br.com.paulopinheiro.sampledb.persistence.entities;
+package br.com.paulopinheiro.sampledb.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,9 +13,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import br.com.paulopinheiro.sampledb.persistence.validator.SalesBeforeShipping;
 
 @Entity
 @Table(name = "purchase_order")
+@SalesBeforeShipping(salesDateField="salesDate", shippingDateField="shippingDate")
 public class PurchaseOrder implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

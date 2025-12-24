@@ -1,6 +1,6 @@
-package br.com.paulopinheiro.sampledb.persistence.entities;
+package br.com.paulopinheiro.sampledb.persistence.entity;
 
-import br.com.paulopinheiro.sampledb.persistence.converters.BooleanToStringConverter;
+import br.com.paulopinheiro.sampledb.persistence.converter.BooleanToStringConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;

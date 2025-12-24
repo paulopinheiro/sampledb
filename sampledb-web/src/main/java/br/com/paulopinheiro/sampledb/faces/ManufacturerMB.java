@@ -1,7 +1,7 @@
 package br.com.paulopinheiro.sampledb.faces;
 
-import br.com.paulopinheiro.sampledb.core.services.ManufacturerService;
-import br.com.paulopinheiro.sampledb.persistence.entities.Manufacturer;
+import br.com.paulopinheiro.sampledb.core.service.ManufacturerService;
+import br.com.paulopinheiro.sampledb.persistence.entity.Manufacturer;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;

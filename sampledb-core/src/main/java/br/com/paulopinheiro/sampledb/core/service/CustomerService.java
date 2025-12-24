@@ -1,6 +1,6 @@
-package br.com.paulopinheiro.sampledb.core.services;
+package br.com.paulopinheiro.sampledb.core.service;
 
-import br.com.paulopinheiro.sampledb.persistence.entities.Customer;
+import br.com.paulopinheiro.sampledb.persistence.entity.Customer;
 import java.util.List;
 
 public interface CustomerService {

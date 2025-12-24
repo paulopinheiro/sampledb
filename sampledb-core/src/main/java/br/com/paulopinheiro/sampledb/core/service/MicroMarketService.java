@@ -1,6 +1,6 @@
-package br.com.paulopinheiro.sampledb.core.services;
+package br.com.paulopinheiro.sampledb.core.service;
 
-import br.com.paulopinheiro.sampledb.persistence.entities.MicroMarket;
+import br.com.paulopinheiro.sampledb.persistence.entity.MicroMarket;
 import java.util.List;
 
 public interface MicroMarketService {

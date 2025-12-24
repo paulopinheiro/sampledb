@@ -1,11 +1,8 @@
-package br.com.paulopinheiro.sampledb.persistence.entities;
+package br.com.paulopinheiro.sampledb.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -13,23 +10,26 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
-
 @Entity
-public class Customer implements Serializable {
+public class Manufacturer implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Column(name="customer_id")
-    private Integer customerId;
+    @Column(name="manufacturer_id")
+    private Integer manufacturerId;
     @NotNull @Size(min=1, max=30)
     private String name;
     @NotNull @Size(min=1, max=30)
+    @Column(name = "addressline1")
     private String addressLine1;
-    @Size(max=30)
+    @Size(min=1, max=30)
+    @Column(name = "addressline2")
     private String addressLine2;
-    @Size(max=25)
+    @NotNull @Size(min=1, max=25)
     private String city;
-    @Size(min=2, max=2)
+    @NotNull @Size(min=2, max=2)
     private String state;
+    @Size(max=10)
+    private String zip;
     @Size(max=12)
     private String phone;
     @Size(max=12)
@@ -37,20 +37,17 @@ public class Customer implements Serializable {
     @Size(max=40)
     @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")
     private String email;
-    @Min(0)
-    @Column(name="credit_limit")
-    private Integer creditLimit;
-    @JoinColumn(name = "discount_code", referencedColumnName = "discount_code")
-    @ManyToOne(optional = false)
-    private DiscountCode discountCode;
-    @JoinColumn(name = "zip", referencedColumnName = "zip_code")
-    @ManyToOne(optional = false)
-    private MicroMarket microMarket;
+    @Size(max=30)
+    private String rep;
 
-    public Customer() {}
+    public Manufacturer() {}
 
-    public Integer getCustomerId() {return customerId;}
-    public void setCustomerId(Integer customerId) {this.customerId = customerId;}
+    public Manufacturer(Integer manufacturerId) {
+        this.manufacturerId = manufacturerId;
+    }
+
+    public Integer getManufacturerId() {return manufacturerId;}
+    public void setManufacturerId(Integer manufacturerId) {this.manufacturerId = manufacturerId;}
 
     public String getName() {return name;}
     public void setName(String name) {this.name = name;}
@@ -67,6 +64,9 @@ public class Customer implements Serializable {
     public String getState() {return state;}
     public void setState(String state) {this.state = state;}
 
+    public String getZip() {return zip;}
+    public void setZip(String zip) {this.zip = zip;}
+
     public String getPhone() {return phone;}
     public void setPhone(String phone) {this.phone = phone;}
 
@@ -76,31 +76,29 @@ public class Customer implements Serializable {
     public String getEmail() {return email;}
     public void setEmail(String email) {this.email = email;}
 
-    public Integer getCreditLimit() {return creditLimit;}
-    public void setCreditLimit(Integer creditLimit) {this.creditLimit = creditLimit;}
-
-    public DiscountCode getDiscountCode() {return discountCode;}
-    public void setDiscountCode(DiscountCode discountCode) {this.discountCode = discountCode;}
-
-    public MicroMarket getMicroMarket() {return microMarket;}
-    public void setMicroMarket(MicroMarket microMarket) {this.microMarket = microMarket;}
+    public String getRep() {return rep;}
+    public void setRep(String rep) {this.rep = rep;}
 
     @Override
-    public int hashCode() {return Objects.hash(customerId);}
+    public int hashCode() {
+        return Objects.hash(manufacturerId);
+    }
 
     @Override
     public boolean equals(Object object) {
         if (this==object) return true;
-        if (Optional.ofNullable(object).isEmpty()) return false;
 
-        if (object instanceof Customer other)
-            return Objects.equals(this.getCustomerId(), other.getCustomerId());
+        if (Optional.ofNullable(object).isEmpty()) return false;
+        
+        if (object instanceof Manufacturer other) {
+            return Objects.equals(this.getManufacturerId(), other.getManufacturerId());
+        }
 
         return false;
     }
 
     @Override
     public String toString() {
-        return name;
+        return name + " (" + rep + ")";
     }
 }

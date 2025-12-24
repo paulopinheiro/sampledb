@@ -1,8 +1,8 @@
-package br.com.paulopinheiro.sampledb.core.services.impl;
+package br.com.paulopinheiro.sampledb.core.service.impl;
 
-import br.com.paulopinheiro.sampledb.core.services.ManufacturerService;
+import br.com.paulopinheiro.sampledb.core.service.ManufacturerService;
 import br.com.paulopinheiro.sampledb.persistence.dao.impl.ManufacturerDao;
-import br.com.paulopinheiro.sampledb.persistence.entities.Manufacturer;
+import br.com.paulopinheiro.sampledb.persistence.entity.Manufacturer;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import java.util.List;

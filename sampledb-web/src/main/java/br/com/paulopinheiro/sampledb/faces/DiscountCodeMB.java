@@ -1,7 +1,7 @@
 package br.com.paulopinheiro.sampledb.faces;
 
-import br.com.paulopinheiro.sampledb.core.services.DiscountCodeService;
-import br.com.paulopinheiro.sampledb.persistence.entities.DiscountCode;
+import br.com.paulopinheiro.sampledb.core.service.DiscountCodeService;
+import br.com.paulopinheiro.sampledb.persistence.entity.DiscountCode;
 import jakarta.ejb.EJB;
 import jakarta.inject.Named;
 import jakarta.faces.view.ViewScoped;

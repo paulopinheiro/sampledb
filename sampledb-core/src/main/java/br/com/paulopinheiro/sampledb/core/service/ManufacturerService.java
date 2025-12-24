@@ -1,6 +1,6 @@
-package br.com.paulopinheiro.sampledb.core.services;
+package br.com.paulopinheiro.sampledb.core.service;
 
-import br.com.paulopinheiro.sampledb.persistence.entities.Manufacturer;
+import br.com.paulopinheiro.sampledb.persistence.entity.Manufacturer;
 import java.util.List;
 
 public interface ManufacturerService {

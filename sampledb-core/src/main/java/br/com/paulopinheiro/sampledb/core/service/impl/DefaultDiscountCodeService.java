@@ -1,8 +1,8 @@
-package br.com.paulopinheiro.sampledb.core.services.impl;
+package br.com.paulopinheiro.sampledb.core.service.impl;
 
-import br.com.paulopinheiro.sampledb.core.services.DiscountCodeService;
+import br.com.paulopinheiro.sampledb.core.service.DiscountCodeService;
 import br.com.paulopinheiro.sampledb.persistence.dao.impl.DiscountCodeDao;
-import br.com.paulopinheiro.sampledb.persistence.entities.DiscountCode;
+import br.com.paulopinheiro.sampledb.persistence.entity.DiscountCode;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import java.util.List;

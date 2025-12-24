@@ -1,4 +1,4 @@
-package br.com.paulopinheiro.sampledb.persistence.converters;
+package br.com.paulopinheiro.sampledb.persistence.converter;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

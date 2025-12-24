@@ -1,11 +1,11 @@
-package br.com.paulopinheiro.sampledb.core.services;
+package br.com.paulopinheiro.sampledb.core.service;
 
-import br.com.paulopinheiro.sampledb.persistence.entities.Customer;
-import br.com.paulopinheiro.sampledb.persistence.entities.Manufacturer;
-import br.com.paulopinheiro.sampledb.persistence.entities.MicroMarket;
-import br.com.paulopinheiro.sampledb.persistence.entities.Product;
-import br.com.paulopinheiro.sampledb.persistence.entities.ProductCode;
-import br.com.paulopinheiro.sampledb.persistence.entities.PurchaseOrder;
+import br.com.paulopinheiro.sampledb.persistence.entity.Customer;
+import br.com.paulopinheiro.sampledb.persistence.entity.Manufacturer;
+import br.com.paulopinheiro.sampledb.persistence.entity.MicroMarket;
+import br.com.paulopinheiro.sampledb.persistence.entity.Product;
+import br.com.paulopinheiro.sampledb.persistence.entity.ProductCode;
+import br.com.paulopinheiro.sampledb.persistence.entity.PurchaseOrder;
 import java.time.LocalDate;
 import java.util.List;
 

@@ -1,6 +1,6 @@
-package br.com.paulopinheiro.sampledb.core.services;
+package br.com.paulopinheiro.sampledb.core.service;
 
-import br.com.paulopinheiro.sampledb.persistence.entities.DiscountCode;
+import br.com.paulopinheiro.sampledb.persistence.entity.DiscountCode;
 import java.util.List;
 
 public interface DiscountCodeService {

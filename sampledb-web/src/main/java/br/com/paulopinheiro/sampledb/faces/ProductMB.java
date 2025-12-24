@@ -1,11 +1,11 @@
 package br.com.paulopinheiro.sampledb.faces;
 
-import br.com.paulopinheiro.sampledb.core.services.ManufacturerService;
-import br.com.paulopinheiro.sampledb.core.services.ProductCodeService;
-import br.com.paulopinheiro.sampledb.core.services.ProductService;
-import br.com.paulopinheiro.sampledb.persistence.entities.Manufacturer;
-import br.com.paulopinheiro.sampledb.persistence.entities.Product;
-import br.com.paulopinheiro.sampledb.persistence.entities.ProductCode;
+import br.com.paulopinheiro.sampledb.core.service.ManufacturerService;
+import br.com.paulopinheiro.sampledb.core.service.ProductCodeService;
+import br.com.paulopinheiro.sampledb.core.service.ProductService;
+import br.com.paulopinheiro.sampledb.persistence.entity.Manufacturer;
+import br.com.paulopinheiro.sampledb.persistence.entity.Product;
+import br.com.paulopinheiro.sampledb.persistence.entity.ProductCode;
 import jakarta.ejb.EJB;
 import jakarta.inject.Named;
 import jakarta.faces.view.ViewScoped;

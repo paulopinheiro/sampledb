@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @Entity
@@ -57,7 +58,7 @@ public class PurchaseOrder implements Serializable {
 
         saleCost = this.getProduct().getSellingPriceWithDiscount().multiply(new BigDecimal(this.getQuantity()));
 
-        customerDiscount = saleCost.multiply(this.getCustomer().getDiscountCode().getRate());
+        customerDiscount = saleCost.multiply(this.getCustomer().getDiscountCode().getRate().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP));
 
         return saleCost.subtract(customerDiscount);
     }

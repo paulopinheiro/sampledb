@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 import java.util.Optional;
 /**
@@ -62,7 +63,7 @@ public class Product implements Serializable {
 
     @Transient
     public BigDecimal getMarkupAmount() {
-        return this.getPurchaseCost().multiply(this.getMarkup());
+        return this.getPurchaseCost().multiply(this.getMarkup().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP));
     }
 
     @Transient
@@ -84,7 +85,7 @@ public class Product implements Serializable {
 
     @Transient
     public BigDecimal getDiscountAmount() {
-        return this.getSellingPrice().multiply(this.getDiscountRate());
+        return this.getSellingPrice().multiply(this.getDiscountRate().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP));
     }
 
     @Transient

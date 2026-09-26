@@ -13,6 +13,14 @@ public class DefaultProductService implements ProductService {
     @EJB private ProductDao dao;    
 
     @Override
+    public void subtractFromProductQuantity(Product product, Integer quantityTaken) {
+        if (product.getQuantityOnHand() < quantityTaken)
+            throw new IllegalArgumentException("There are only " + product.getQuantityOnHand() + " unities of " + product.getDescription());
+        product.setQuantityOnHand(product.getQuantityOnHand() - quantityTaken);
+        dao.edit(product);
+    }
+
+    @Override
     public List<Product> getAllProducts() {
         return dao.findAll();
     }

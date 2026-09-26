@@ -10,51 +10,77 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.Optional;
 
 @Entity
 @Table(name = "product_code")
 public class ProductCode implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name="prod_code")
-    @Size(min=2, max=2)
-    private String prodCode;
     @NotNull
-    @JoinColumn(name = "discount_code", referencedColumnName = "discount_code")
+    @Size(min = 2, max = 2)
+    @Column(name = "prod_code", length = 2, nullable = false)
+    private String prodCode;
+
+    @NotNull
     @ManyToOne(optional = false)
+    @JoinColumn(name = "discount_code", referencedColumnName = "discount_code", nullable = false)
     private DiscountCode discountCode;
-    @Size(max=10)
+
+    @Size(max = 10)
+    @Column(name = "description", length = 10)
     private String description;
 
     public ProductCode() {}
 
-    public String getProdCode() {return prodCode;}
-    public void setProdCode(String prodCode) {this.prodCode = prodCode;}
+    public ProductCode(String prodCode, DiscountCode discountCode) {
+        this.prodCode = prodCode;
+        this.discountCode = discountCode;
+    }
 
-    public DiscountCode getDiscountCode() {return discountCode;}
-    public void setDiscountCode(DiscountCode discountCode) {this.discountCode = discountCode;}
-    
-    public String getDescription() {return description;}
-    public void setDescription(String description) {this.description = description;}
+    public String getProdCode() {
+        return prodCode;
+    }
+
+    public void setProdCode(String prodCode) {
+        this.prodCode = prodCode;
+    }
+
+    public DiscountCode getDiscountCode() {
+        return discountCode;
+    }
+
+    public void setDiscountCode(DiscountCode discountCode) {
+        this.discountCode = discountCode;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @Override
-    public int hashCode() {return Objects.hash(prodCode);}
+    public int hashCode() {
+        return Objects.hash(prodCode);
+    }
 
     @Override
     public boolean equals(Object object) {
-        if (this==object) return true;
-        if (Optional.ofNullable(object).isEmpty()) return false;
+        if (this == object) return true;
+        if (object == null) return false;
 
-        if (object instanceof ProductCode other)
-            return Objects.equals(this.getProdCode(), other.getProdCode());
-
+        if (object instanceof ProductCode other) {
+            return Objects.equals(this.prodCode, other.getProdCode());
+        }
         return false;
     }
 
     @Override
     public String toString() {
-        return description;
+        return "ProductCode{code='" + prodCode + "', description='" + description + "'}";
     }
 }

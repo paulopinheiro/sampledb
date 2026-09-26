@@ -2,13 +2,18 @@ package br.com.paulopinheiro.sampledb.persistence.dao.impl;
 
 import br.com.paulopinheiro.sampledb.persistence.dao.AbstractDao;
 import br.com.paulopinheiro.sampledb.persistence.entity.ProductCode;
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
-@Stateless
+/**
+ * Data Access Object for ProductCode entity using pure Jakarta CDI and Persistence.
+ */
+@ApplicationScoped // Migrating from legacy EJB @Stateless to lightweight CDI context
+@Transactional // Guarantees native ACID transaction control via Jakarta Transactions
 public class ProductCodeDao extends AbstractDao<ProductCode> {
-    @PersistenceContext(name="sampledb-PU") private EntityManager em;
+    @PersistenceContext(unitName="sampledb-PU") private EntityManager em;
 
     public ProductCodeDao() {super(ProductCode.class);}
 

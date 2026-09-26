@@ -14,39 +14,62 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import br.com.paulopinheiro.sampledb.persistence.validator.SalesBeforeShipping;
+import java.util.Objects;
 
 @Entity
 @Table(name = "purchase_order")
-@SalesBeforeShipping(salesDateField="salesDate", shippingDateField="shippingDate")
+// Custom validation annotation applied directly to the type level
+@SalesBeforeShipping(salesDateField = "salesDate", shippingDateField = "shippingDate")
 public class PurchaseOrder implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
-    @Column(name="order_num")
-    private Integer orderNum;
-    @NotNull @Min(0)
-    private Short quantity;
-    @Min(0)
-    @Column(name="shipping_cost")
-    private BigDecimal shippingCost;
     @NotNull
-    @Column(name="sales_date")
+    @Column(name = "order_num", nullable = false)
+    private Integer orderNum;
+
+    @NotNull
+    @Min(0)
+    @Column(name = "quantity", nullable = false)
+    private Short quantity = 0;
+
+    @NotNull
+    @Min(0)
+    @Column(name = "shipping_cost", nullable = false, precision = 12, scale = 2)
+    private BigDecimal shippingCost = BigDecimal.ZERO;
+
+    @NotNull
+    @Column(name = "sales_date", nullable = false)
     private LocalDate salesDate;
-    @Column(name="shipping_date")
+
+    @Column(name = "shipping_date")
     private LocalDate shippingDate;
-    @Column(name="freight_company")
+
+    @Column(name = "freight_company")
     private String freightCompany;
-    @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
+
+    @NotNull
     @ManyToOne(optional = false)
+    @JoinColumn(name = "customer_id", referencedColumnName = "customer_id", nullable = false)
     private Customer customer;
-    @JoinColumn(name = "product_id", referencedColumnName = "product_id")
+
+    @NotNull
     @ManyToOne(optional = false)
+    @JoinColumn(name = "product_id", referencedColumnName = "product_id", nullable = false)
     private Product product;
 
     public PurchaseOrder() {}
 
-    public PurchaseOrder(Short quantity, BigDecimal shippingCost, LocalDate salesDate, LocalDate shippingDate, String freightCompany, Customer customer, Product product) {
-        this.quantity = quantity;
-        this.shippingCost = shippingCost;
+    public PurchaseOrder(LocalDate salesDate, Short quantity) {
+        this.salesDate = salesDate;
+        this.quantity = quantity != null ? quantity : 0;
+    }
+
+    public PurchaseOrder(Short quantity, BigDecimal shippingCost, LocalDate salesDate, LocalDate shippingDate, 
+                         String freightCompany, Customer customer, Product product) {
+        this.quantity = quantity != null ? quantity : 0;
+        this.shippingCost = shippingCost != null ? shippingCost : BigDecimal.ZERO;
         this.salesDate = salesDate;
         this.shippingDate = shippingDate;
         this.freightCompany = freightCompany;
@@ -54,21 +77,35 @@ public class PurchaseOrder implements Serializable {
         this.product = product;
     }
 
+    // Transient Domain Computations
+
     @Transient
-    public BigDecimal getTotalSaleCost() {
-        BigDecimal saleCost, customerDiscount;
+    public BigDecimal getSubTotalCost() {
+        if (product == null) return BigDecimal.ZERO;
+        return product.getSellingPriceWithDiscount().multiply(new BigDecimal(getQuantity()));
+    }
 
-        saleCost = this.getProduct().getSellingPriceWithDiscount().multiply(new BigDecimal(this.getQuantity()));
+    @Transient
+    public BigDecimal getCustomerDiscount() {
+        if (customer == null || customer.getDiscountCode() == null || customer.getDiscountCode().getRate() == null) {
+            return BigDecimal.ZERO;
+        }
+        return getSubTotalCost().multiply(
+                customer.getDiscountCode().getRate().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP)
+        );
+    }
 
-        customerDiscount = saleCost.multiply(this.getCustomer().getDiscountCode().getRate().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP));
-
-        return saleCost.subtract(customerDiscount);
+    @Transient
+    public BigDecimal getSubTotalCostWithDiscount() {
+        return getSubTotalCost().subtract(getCustomerDiscount());
     }
 
     @Transient
     public BigDecimal getTotalCost() {
-        return this.getTotalSaleCost().add(this.getShippingCost());
+        return getSubTotalCostWithDiscount().add(getShippingCost());
     }
+
+    // Getters and Setters
 
     public Integer getOrderNum() {
         return orderNum;
@@ -83,7 +120,7 @@ public class PurchaseOrder implements Serializable {
     }
 
     public void setQuantity(Short quantity) {
-        this.quantity = quantity;
+        this.quantity = quantity != null ? quantity : 0;
     }
 
     public BigDecimal getShippingCost() {
@@ -91,7 +128,7 @@ public class PurchaseOrder implements Serializable {
     }
 
     public void setShippingCost(BigDecimal shippingCost) {
-        this.shippingCost = shippingCost;
+        this.shippingCost = shippingCost != null ? shippingCost : BigDecimal.ZERO;
     }
 
     public LocalDate getSalesDate() {
@@ -136,23 +173,22 @@ public class PurchaseOrder implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (orderNum != null ? orderNum.hashCode() : 0);
-        return hash;
+        return Objects.hash(orderNum);
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof PurchaseOrder)) {
-            return false;
+        if (this == object) return true;
+        if (object == null) return false;
+
+        if (object instanceof PurchaseOrder other) {
+            return Objects.equals(this.orderNum, other.getOrderNum());
         }
-        PurchaseOrder other = (PurchaseOrder) object;
-        return !((this.orderNum == null && other.orderNum != null) || (this.orderNum != null && !this.orderNum.equals(other.orderNum)));
+        return false;
     }
 
     @Override
     public String toString() {
-        return orderNum + " (" + customer + ")";
+        return "PurchaseOrder{orderNum=" + orderNum + ", salesDate=" + salesDate + "}";
     }
 }

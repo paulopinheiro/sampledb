@@ -6,39 +6,43 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 public abstract class AbstractDao<T> {
+    
     private final Class<T> entityClass;
 
-    public AbstractDao(Class<T> entityClass) {
+    protected AbstractDao(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 
     protected abstract EntityManager getEntityManager();
 
     protected T getUniqueEqualStringAttribute(String attributeName, String equalPattern) {
-        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(entityClass);
-        Root<T> root = criteriaQuery.from(entityClass);
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<T> cq = cb.createQuery(entityClass);
+        Root<T> root = cq.from(entityClass);
 
-        criteriaQuery.select(root);
-        criteriaQuery.where(criteriaBuilder.equal(root.get(attributeName), notNullString(equalPattern)));
-        List<T> list = getEntityManager().createQuery(criteriaQuery).getResultList();
-        if (Optional.ofNullable(list).isEmpty() || list.isEmpty()) return null;
-        return list.get(0);
+        String safePattern = Objects.requireNonNullElse(equalPattern, "");
+
+        cq.select(root);
+        cq.where(cb.equal(root.get(attributeName), safePattern));
+        
+        List<T> list = getEntityManager().createQuery(cq).getResultList();
+        return list.isEmpty() ? null : list.getFirst(); // Java Modern feature: getFirst() over get(0)
     }
 
     protected TypedQuery<T> getLikeTypedQuery(String attributeName, String likePattern) {
-        CriteriaBuilder criteriaBuilder = this.getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(entityClass);
-        Root<T> root = criteriaQuery.from(entityClass);
+        CriteriaBuilder cb = this.getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<T> cq = cb.createQuery(entityClass);
+        Root<T> root = cq.from(entityClass);
 
-        criteriaQuery.select(root);
-        criteriaQuery.where(criteriaBuilder.like(criteriaBuilder.upper(root.get(attributeName)),
-                                                       "%" + notNullString(likePattern).toUpperCase() + "%"));
+        String safePattern = Objects.requireNonNullElse(likePattern, "").toUpperCase();
 
-        return getEntityManager().createQuery(criteriaQuery);
+        cq.select(root);
+        cq.where(cb.like(cb.upper(root.get(attributeName)), "%" + safePattern + "%"));
+
+        return getEntityManager().createQuery(cq);
     }
 
     protected List<T> findEntitiesWithNotNullColumn(String attributeName) {
@@ -46,13 +50,10 @@ public abstract class AbstractDao<T> {
         CriteriaQuery<T> cq = cb.createQuery(entityClass);
         Root<T> root = cq.from(entityClass);
 
+        cq.select(root);
         cq.where(cb.isNotNull(root.get(attributeName)));
 
         return getEntityManager().createQuery(cq).getResultList();
-    }
-
-    private static String notNullString(String string) {
-        return Optional.ofNullable(string).orElse("");
     }
 
     public void create(T entity) {
@@ -64,7 +65,14 @@ public abstract class AbstractDao<T> {
     }
 
     public void remove(T entity) {
-        getEntityManager().remove(getEntityManager().merge(entity));
+        EntityManager em = getEntityManager();
+        // Defensive check: if the entity is managed, remove it directly. 
+        // If detached, merge it back into the persistent context before removing.
+        if (em.contains(entity)) {
+            em.remove(entity);
+        } else {
+            em.remove(em.merge(entity));
+        }
     }
 
     public T find(Object id) {
@@ -72,25 +80,30 @@ public abstract class AbstractDao<T> {
     }
 
     public List<T> findAll() {
-        jakarta.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<T> cq = cb.createQuery(entityClass);
         cq.select(cq.from(entityClass));
         return getEntityManager().createQuery(cq).getResultList();
     }
 
     public List<T> findRange(int[] range) {
-        jakarta.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<T> cq = cb.createQuery(entityClass);
         cq.select(cq.from(entityClass));
-        jakarta.persistence.Query q = getEntityManager().createQuery(cq);
-        q.setMaxResults(range[1] - range[0] + 1);
-        q.setFirstResult(range[0]);
-        return q.getResultList();
+        
+        TypedQuery<T> query = getEntityManager().createQuery(cq);
+        query.setMaxResults(range[1] - range[0] + 1);
+        query.setFirstResult(range[0]);
+        return query.getResultList();
     }
 
     public int count() {
-        jakarta.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
-        jakarta.persistence.criteria.Root<T> rt = cq.from(entityClass);
-        cq.select(getEntityManager().getCriteriaBuilder().count(rt));
-        jakarta.persistence.Query q = getEntityManager().createQuery(cq);
-        return ((Long) q.getSingleResult()).intValue();
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class); // Explicit type definition
+        Root<T> root = cq.from(entityClass);
+        
+        cq.select(cb.count(root));
+        Long result = getEntityManager().createQuery(cq).getSingleResult();
+        return result != null ? result.intValue() : 0;
     }
 }

@@ -2,17 +2,21 @@ package br.com.paulopinheiro.sampledb.persistence.dao.impl;
 
 import br.com.paulopinheiro.sampledb.persistence.dao.AbstractDao;
 import br.com.paulopinheiro.sampledb.persistence.entity.Manufacturer;
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
-import java.util.Optional;
+import jakarta.transaction.Transactional;
 
-@Stateless
+/**
+ * Data Access Object for Manufacturer entity using pure Jakarta CDI and Persistence.
+ * Generation rules are handled at the core service level due to business smart keys.
+ */
+@ApplicationScoped 
+@Transactional 
 public class ManufacturerDao extends AbstractDao<Manufacturer> {
-    @PersistenceContext(name="sampledb-PU") private EntityManager em;
+
+    @PersistenceContext(unitName = "sampledb-PU") 
+    private EntityManager em;
 
     public ManufacturerDao() {
         super(Manufacturer.class);
@@ -21,18 +25,5 @@ public class ManufacturerDao extends AbstractDao<Manufacturer> {
     @Override
     protected EntityManager getEntityManager() {
         return em;
-    }
-
-    public Integer getNextAvailableId() {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-
-        CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
-        Root<Manufacturer> root = cq.from(Manufacturer.class);
-
-        cq.select(cb.max(root.get("manufacturerId")));
-
-        Integer maxId = em.createQuery(cq).getSingleResult();
-
-        return (Optional.ofNullable(maxId ).isEmpty()) ? 1 : maxId + 1;
     }
 }

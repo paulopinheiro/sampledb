@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +16,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
-import java.util.Optional;
 /**
  * 
  * @author paulopinheiro
@@ -33,37 +33,60 @@ import java.util.Optional;
     AND   new.quantity_on_hand=0;
  */
 @Entity
+@Table(name = "product")
 public class Product implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name="product_id")
+    @NotNull
+    @Column(name = "product_id", nullable = false)
     private Integer productId;
-    @NotNull @Min(0)
-    @Column(name="purchase_cost", nullable=false)
-    private BigDecimal purchaseCost;
-    @NotNull @Min(0)
-    @Column(name="quantity_on_hand")
-    private Integer quantityOnHand;
-    @NotNull @Min(0)
-    private BigDecimal markup;
+
     @NotNull
+    @Min(0)
+    @Column(name = "purchase_cost", nullable = false, precision = 12, scale = 2)
+    private BigDecimal purchaseCost = BigDecimal.ZERO;
+
+    @NotNull
+    @Min(0)
+    @Column(name = "quantity_on_hand", nullable = false)
+    private Integer quantityOnHand = 0;
+
+    @NotNull
+    @Min(0)
+    @Column(name = "markup", nullable = false, precision = 4, scale = 2)
+    private BigDecimal markup = BigDecimal.ZERO;
+
+    @NotNull
+    @Column(name = "available", nullable = false, length = 5)
+    // Assuming your BooleanToStringConverter converts true to "TRUE" and false to "FALSE"
     @Convert(converter = BooleanToStringConverter.class)
-    private Boolean available;
-    @NotNull @Size(min=1, max=50)
+    private Boolean available = Boolean.TRUE;
+
+    @NotNull
+    @Size(min = 1, max = 50)
+    @Column(name = "description", length = 50, nullable = false)
     private String description;
+
     @NotNull
-    @ManyToOne @JoinColumn(name = "manufacturer_id", referencedColumnName = "manufacturer_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "manufacturer_id", referencedColumnName = "manufacturer_id", nullable = false)
     private Manufacturer manufacturer;
+
     @NotNull
-    @ManyToOne @JoinColumn(name = "product_code", referencedColumnName = "prod_code")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "product_code", referencedColumnName = "prod_code", nullable = false)
     private ProductCode productCode;
 
     public Product() {}
 
+    // Business Logic Rules (Transient Domain Computations)
+
     @Transient
     public BigDecimal getMarkupAmount() {
-        return this.getPurchaseCost().multiply(this.getMarkup().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP));
+        return this.getPurchaseCost()
+                .multiply(this.getMarkup().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP));
     }
 
     @Transient
@@ -73,19 +96,17 @@ public class Product implements Serializable {
 
     @Transient
     public BigDecimal getDiscountRate() {
-        BigDecimal discountRate = new BigDecimal(0);
-
-        if ((Optional.ofNullable(this.getProductCode()).isPresent())
-         && (Optional.ofNullable(this.getProductCode().getDiscountCode()).isPresent())
-         && (Optional.ofNullable(this.getProductCode().getDiscountCode().getRate()).isPresent()))
-            discountRate = this.getProductCode().getDiscountCode().getRate();
-
-        return discountRate;
+        // Law of Demeter fix: Safe navigation without deeply nested Optionals
+        if (productCode != null && productCode.getDiscountCode() != null && productCode.getDiscountCode().getRate() != null) {
+            return productCode.getDiscountCode().getRate();
+        }
+        return BigDecimal.ZERO;
     }
 
     @Transient
     public BigDecimal getDiscountAmount() {
-        return this.getSellingPrice().multiply(this.getDiscountRate().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP));
+        return this.getSellingPrice()
+                .multiply(this.getDiscountRate().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP));
     }
 
     @Transient
@@ -93,46 +114,96 @@ public class Product implements Serializable {
         return this.getSellingPrice().subtract(this.getDiscountAmount());
     }
 
-    public Integer getProductId() {return productId;}
-    public void setProductId(Integer productId) {this.productId = productId;}
+    // Getters and Setters
 
-    public BigDecimal getPurchaseCost() {return purchaseCost;}
-    public void setPurchaseCost(BigDecimal purchaseCost) {this.purchaseCost = purchaseCost;}
+    public Integer getProductId() {
+        return productId;
+    }
 
-    public Integer getQuantityOnHand() {return quantityOnHand;}
-    public void setQuantityOnHand(Integer quantityOnHand) {this.quantityOnHand = quantityOnHand;}
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
 
-    public BigDecimal getMarkup() {return markup;}
-    public void setMarkup(BigDecimal markup) {this.markup = markup;}
+    public BigDecimal getPurchaseCost() {
+        return purchaseCost;
+    }
 
-    public Boolean getAvailable() {return available;}
-    public void setAvailable(Boolean available) {this.available = available;}
+    public void setPurchaseCost(BigDecimal purchaseCost) {
+        this.purchaseCost = purchaseCost != null ? purchaseCost : BigDecimal.ZERO;
+    }
 
-    public String getDescription() {return description;}
-    public void setDescription(String description) {this.description = description;}
+    public Integer getQuantityOnHand() {
+        return quantityOnHand;
+    }
 
-    public Manufacturer getManufacturer() {return manufacturer;}
-    public void setManufacturer(Manufacturer manufacturer) {this.manufacturer = manufacturer;}
+    /**
+     * Replaces the Database Trigger rule natively inside the domain model (SRP/SOLID)
+     */
+    public void setQuantityOnHand(Integer quantityOnHand) {
+        this.quantityOnHand = quantityOnHand != null ? quantityOnHand : 0;
+        if (this.quantityOnHand == 0) {
+            this.available = Boolean.FALSE; // Replaces DB Trigger safely in memory
+        }
+    }
 
-    public ProductCode getProductCode() {return productCode;}
-    public void setProductCode(ProductCode productCode) {this.productCode = productCode;}
+    public BigDecimal getMarkup() {
+        return markup;
+    }
+
+    public void setMarkup(BigDecimal markup) {
+        this.markup = markup;
+    }
+
+    public Boolean getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(Boolean available) {
+        this.available = available != null ? available : Boolean.FALSE;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Manufacturer getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(Manufacturer manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public ProductCode getProductCode() {
+        return productCode;
+    }
+
+    public void setProductCode(ProductCode productCode) {
+        this.productCode = productCode;
+    }
 
     @Override
-    public int hashCode() {return Objects.hash(productId);}
+    public int hashCode() {
+        return Objects.hash(productId);
+    }
 
     @Override
     public boolean equals(Object object) {
-        if (this==object) return true;
-        if (Optional.ofNullable(object).isEmpty()) return false;
+        if (this == object) return true;
+        if (object == null) return false;
 
-        if (object instanceof Product other)
-            return Objects.equals(this.getProductId(), other.getProductId());
-
+        if (object instanceof Product other) {
+            return Objects.equals(this.productId, other.getProductId());
+        }
         return false;
     }
 
     @Override
     public String toString() {
-        return description;
+        return "Product{id=" + productId + ", description='" + description + "', available=" + available + "}";
     }
 }

@@ -1,21 +1,185 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="jakarta.faces.facelets">
-
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="primefaces"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html">
     <body>
-
         <ui:composition template="./../../resources/templates/mainTemplate.xhtml">
-
-            <ui:define name="pageTitle">
-                Purchase Order Form
-            </ui:define>
-
+            <ui:define name="pageTitle">Purchase Order Form</ui:define>
             <ui:define name="content">
-                content
+                <h:form id="registrationForm">
+                    <p:panel>
+                        <table>
+                            <tr>
+                                <td><p:outputLabel for="orderNum" value="Number" /></td>
+                                <td><p:inputText id="orderNum" value="#{purchaseOrderMB.purchaseOrder.orderNum}" size="10" /></td>
+                                <td><p:outputLabel for="salesDate" value="Date" /></td>
+                                <td><p:datePicker id="salesDate" value="#{purchaseOrderMB.purchaseOrder.salesDate}" size="12" /></td>
+                                <td><p:outputLabel for="customer" value="Customer" /></td>
+                                <td>
+                                    <p:selectOneMenu id="customer" value="#{purchaseOrderMB.purchaseOrder.customer}" converter="customerConverter">
+                                        <f:selectItem noSelectionOption="true" itemLabel="--- Select One ---" />
+                                        <f:selectItems value="#{purchaseOrderMB.customersList}" var="customer" itemValue="#{customer}" itemLabel="#{customer}" />
+                                        <p:ajax update="customerDiscountLabel customerDiscount subTotalCostWithDiscount totalCost" />
+                                    </p:selectOneMenu>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td /><td><p:message for="orderNum" /></td>
+                                <td /><td><p:message for="salesDate" /></td>
+                                <td /><td><p:message for="customer" /></td>
+                            </tr>
+                        </table>
+                        <table>
+                            <tr>
+                                <td><p:outputLabel for="product" value="Product" /></td>
+                                <td>
+                                    <p:selectOneMenu id="product" value="#{purchaseOrderMB.purchaseOrder.product}" converter="productConverter">
+                                        <f:selectItem noSelectionOption="true" itemLabel="--- Select One ---" />
+                                        <f:selectItems value="#{purchaseOrderMB.productsList}" var="product" itemValue="#{product}" itemLabel="#{product}" />
+                                        <p:ajax update="sellingPrice discountAmount sellingPriceWithDiscount discountAmountLabel
+                                                        subTotalCost customerDiscountLabel customerDiscount subTotalCostWithDiscount totalCost" />
+                                    </p:selectOneMenu>                                
+                                </td>
+                                <td><p:outputLabel for="quantity" value="Quantity" /></td>
+                                <td><p:spinner id="quantity" value="#{purchaseOrderMB.purchaseOrder.quantity}" size="8" min="1">
+                                        <p:ajax update="sellingPrice discountAmount sellingPriceWithDiscount discountAmountLabel
+                                                        subTotalCost customerDiscountLabel customerDiscount subTotalCostWithDiscount totalCost" />
+                                    </p:spinner>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td /><td><p:message for="product" /></td>
+                                <td /><td><p:message for="quantity" /></td>
+                            </tr>
+                        </table>
+                        <table>
+                            <tr>
+                                <td><p:outputLabel for="sellingPrice" value="Selling Price:" /></td>
+                                <td style="padding-right: 50px">
+                                    <h:outputText id="sellingPrice" value="#{purchaseOrderMB.purchaseOrder.product.sellingPrice}">
+                                        <f:convertNumber type="currency" />
+                                    </h:outputText>
+                                </td>
+                                <td><p:outputLabel id="discountAmountLabel" for="discountAmount" value="Discount (#{purchaseOrderMB.purchaseOrder.product.discountRate} %):" /></td>
+                                <td style="padding-right: 50px">
+                                    <h:outputText id="discountAmount" value="#{purchaseOrderMB.purchaseOrder.product.discountAmount}">
+                                        <f:convertNumber type="currency" />
+                                    </h:outputText>
+                                </td>
+                                <td><p:outputLabel for="sellingPriceWithDiscount" value="Unit price:" /></td>
+                                <td>
+                                    <h:outputText id="sellingPriceWithDiscount" value="#{purchaseOrderMB.purchaseOrder.product.sellingPriceWithDiscount}">
+                                        <f:convertNumber type="currency" />
+                                    </h:outputText>
+                                </td>
+                            </tr>
+                            <p:row>
+                                <td /><td><p:message for="sellingPrice" /></td>
+                                <td /><td><p:message for="discountAmount" /></td>
+                                <td /><td><p:message for="sellingPriceWithDiscount" /></td>
+                            </p:row>
+                        </table>
+                        <table>
+                            <tr>
+                                <td><p:outputLabel for="shippingDate" value="Shipping Date" /></td>
+                                <td><p:datePicker id="shippingDate" value="#{purchaseOrderMB.purchaseOrder.shippingDate}" size="12" /></td>
+                                <td><p:outputLabel for="shippingCost" value="Shipping cost" /></td>
+                                <td>
+                                    <p:inputText id="shippingCost" value="#{purchaseOrderMB.purchaseOrder.shippingCost}" size="10">
+                                        <f:convertNumber maxFractionDigits="2" />
+                                        <p:ajax update="totalCost" />
+                                    </p:inputText>
+                                </td>
+                                <td><p:outputLabel for="freightCompany" value="Freight Company:" /></td>
+                                <td><p:inputText id="freightCompany" value="#{purchaseOrderMB.purchaseOrder.freightCompany}" size="30" /></td>
+                            </tr>
+                            <tr>
+                                <td /><td><p:message for="shippingDate" /></td>
+                                <td /><td><p:message for="shippingCost" /></td>
+                                <td /><td><p:message for="freightCompany" /></td>
+                            </tr>
+                        </table>
+                        <table>
+                            <tr>
+                                <td><p:outputLabel for="subTotalCost" value="Sub-total:" /></td>
+                                <td style="padding-right: 30px">
+                                    <h:outputText id="subTotalCost" value="#{purchaseOrderMB.purchaseOrder.subTotalCost}">
+                                        <f:convertNumber type="currency" />
+                                    </h:outputText>
+                                </td>
+                                <td><p:outputLabel id="customerDiscountLabel" for="customerDiscount" value="Customer discount (#{purchaseOrderMB.purchaseOrder.customer.discountCode.rate} %):" /></td>
+                                <td style="padding-right: 30px">
+                                    <h:outputText id="customerDiscount" value="#{purchaseOrderMB.purchaseOrder.customerDiscount}">
+                                        <f:convertNumber type="currency" />
+                                    </h:outputText>
+                                </td>
+                                <td><p:outputLabel for="subTotalCostWithDiscount" value="Subtotal (with discount):" /></td>
+                                <td style="padding-right: 30px">
+                                    <h:outputText id="subTotalCostWithDiscount" value="#{purchaseOrderMB.purchaseOrder.subTotalCostWithDiscount}">
+                                        <f:convertNumber type="currency" />
+                                    </h:outputText>
+                                </td>
+                                <td><p:outputLabel for="totalCost" value="Total:" style="font-weight: bolder" /></td>
+                                <td>
+                                    <h:outputText id="totalCost" value="#{purchaseOrderMB.purchaseOrder.totalCost}" style="font-weight: bolder">
+                                        <f:convertNumber type="currency" />
+                                    </h:outputText>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td /><td><p:message for="subTotalCost" /></td>
+                                <td /><td><p:message for="customerDiscount" /></td>
+                                <td /><td><p:message for="subTotalCostWithDiscount" /></td>
+                                <td /><td><p:message for="totalCost" /></td>
+                            </tr>
+                        </table>
+                    </p:panel>
+                    <p:panelGrid columns="3" style="align-content: center">
+                        <f:facet name="footer">
+                            <h:panelGroup style="align-content: center">
+                                <p:commandButton value="Save" process="@form" update="@form :messages :gmessages :listForm" actionListener="#{purchaseOrderMB.save}" />
+                                <p:commandButton value="New" immediate="true" process="@this" update="@form :messages :gmessages" actionListener="#{purchaseOrderMB.clear}" />
+                                <p:commandButton value="Delete" onclick="PF('exclusionDialog').show();" disabled="#{purchaseOrderMB.newEntity}" /> 
+                            </h:panelGroup>
+                        </f:facet>
+                    </p:panelGrid>
+                    <br />
+                    <p:dialog style="text-align: center;" widgetVar="exclusionDialog" header="Confirm Exclusion" modal="true" resizable="false">
+                        <h:outputText value="Are you sure you want to exclude this order?" /><br /> <br />
+                        <p:commandButton value="Yes" process="@form" actionListener="#{purchaseOrderMB.delete}" oncomplete="PF('exclusionDialog').hide()" update="@form :messages :gmessages :listForm" />
+                        <p:commandButton value="No" onclick="PF('exclusionDialog').hide()" type="button" />
+                    </p:dialog>
+                </h:form>
+                <p:growl id="gmessages" globalOnly="true" />
+                <p:messages id="messages" globalOnly="true" />
+                <h:form id="listForm">
+                    <p:dataTable value="#{purchaseOrderMB.list}" var="purchaseOrder">
+                        <p:column>
+                            <f:facet name="header">Number</f:facet>
+                            <p:commandLink value="#{purchaseOrder.orderNum}" update=":registrationForm">
+                                <f:setPropertyActionListener value="#{purchaseOrder}" target="#{purchaseOrderMB.purchaseOrder}" />
+                            </p:commandLink>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">Customer</f:facet>
+                            <h:outputText value="#{purchaseOrder.customer}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">Product</f:facet>
+                            <h:outputText value="#{purchaseOrder.product}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">Total</f:facet>
+                            <h:outputText value="#{purchaseOrder.totalCost}">
+                                <f:convertNumber type="currency" />
+                            </h:outputText>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
             </ui:define>
-
         </ui:composition>
-
     </body>
 </html>

@@ -1,5 +1,6 @@
 package br.com.paulopinheiro.sampledb.core.service.impl;
 
+import br.com.paulopinheiro.sampledb.core.service.ProductService;
 import br.com.paulopinheiro.sampledb.core.service.PurchaseOrderService;
 import br.com.paulopinheiro.sampledb.persistence.dao.impl.PurchaseOrderDao;
 import br.com.paulopinheiro.sampledb.persistence.entity.Customer;
@@ -10,6 +11,7 @@ import br.com.paulopinheiro.sampledb.persistence.entity.ProductCode;
 import br.com.paulopinheiro.sampledb.persistence.entity.PurchaseOrder;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.Optional;
 @Stateless
 public class DefaultPurchaseOrderService implements PurchaseOrderService {
     @EJB private PurchaseOrderDao dao;
+    @EJB private ProductService productService;
 
     @Override
     public List<PurchaseOrder> getAllOrders() {
@@ -60,11 +63,24 @@ public class DefaultPurchaseOrderService implements PurchaseOrderService {
     }
 
     @Override
+    @Transactional
     public void saveOrder(PurchaseOrder purchaseOrder) {
         if (Optional.ofNullable(purchaseOrder).isEmpty()) throw new IllegalArgumentException("Purchase order can't be null.");
+        if (Optional.ofNullable(purchaseOrder.getOrderNum()).isEmpty()) throw new IllegalArgumentException("You have to inform the purchase order number");
 
-        if (Optional.ofNullable(purchaseOrder.getOrderNum()).isEmpty()) dao.create(purchaseOrder);
-        else dao.edit(purchaseOrder);
+        PurchaseOrder oldOrder = getOrderByNum(purchaseOrder.getOrderNum());
+
+        Integer quantityTaken;
+
+        if (Optional.ofNullable(oldOrder).isEmpty()) {
+            dao.create(purchaseOrder);
+            quantityTaken = Integer.valueOf(purchaseOrder.getQuantity());
+        } else {
+            dao.edit(purchaseOrder);
+            quantityTaken = Integer.valueOf(purchaseOrder.getQuantity()) - Integer.valueOf(oldOrder.getQuantity());
+        }
+
+        if (quantityTaken != 0) productService.subtractFromProductQuantity(purchaseOrder.getProduct(), quantityTaken);
     }
 
     @Override
@@ -78,5 +94,4 @@ public class DefaultPurchaseOrderService implements PurchaseOrderService {
 
         dao.remove(purchaseOrder);
     }
-    
 }

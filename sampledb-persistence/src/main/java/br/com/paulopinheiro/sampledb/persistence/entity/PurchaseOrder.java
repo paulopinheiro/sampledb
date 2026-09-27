@@ -61,6 +61,10 @@ public class PurchaseOrder implements Serializable {
 
     public PurchaseOrder() {}
 
+    public PurchaseOrder(Integer orderNum) {
+        this.orderNum = orderNum;
+    }
+
     public PurchaseOrder(LocalDate salesDate, Short quantity) {
         this.salesDate = salesDate;
         this.quantity = quantity != null ? quantity : 0;

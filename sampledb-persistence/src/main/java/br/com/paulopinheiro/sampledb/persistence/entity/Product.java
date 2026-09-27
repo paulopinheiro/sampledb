@@ -81,6 +81,8 @@ public class Product implements Serializable {
 
     public Product() {}
 
+    public Product(Integer productId) {this.productId = productId;}
+
     // Business Logic Rules (Transient Domain Computations)
 
     @Transient

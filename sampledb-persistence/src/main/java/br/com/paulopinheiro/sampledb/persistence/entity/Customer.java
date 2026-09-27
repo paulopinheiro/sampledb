@@ -80,6 +80,8 @@ public class Customer implements Serializable {
 
     public Customer() {}
 
+    public Customer(Integer customerId) {this.customerId = customerId;}
+
     public Customer(Integer customerId, String name) {
         this.customerId = customerId;
         this.name = name;

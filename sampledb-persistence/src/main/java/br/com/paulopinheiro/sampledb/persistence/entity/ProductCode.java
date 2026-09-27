@@ -34,6 +34,8 @@ public class ProductCode implements Serializable {
 
     public ProductCode() {}
 
+    public ProductCode(String prodCode) {this.prodCode = prodCode;}
+
     public ProductCode(String prodCode, DiscountCode discountCode) {
         this.prodCode = prodCode;
         this.discountCode = discountCode;

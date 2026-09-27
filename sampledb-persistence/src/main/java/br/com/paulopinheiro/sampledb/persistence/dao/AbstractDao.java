@@ -5,6 +5,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,6 +18,48 @@ public abstract class AbstractDao<T> {
     }
 
     protected abstract EntityManager getEntityManager();
+
+    /**
+     * Reusable generic query using Criteria API to filter entities by a exact match attribute.
+     * Perfect for filtering by primary keys, foreign keys (Entities), Integers, or Strings.
+     */
+    protected <V> List<T> findEntitiesByEqualAttribute(String attributeName, V value) {
+        // Fail-fast condition: if there is no filter, returns all or empty depending on design choices
+        if (value == null) {
+            return List.of(); // Safe immutable empty list from modern Java
+        }
+
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<T> cq = cb.createQuery(entityClass);
+        Root<T> root = cq.from(entityClass);
+
+        cq.select(root);
+        // Generates safely: WHERE root.attributeName = value
+        cq.where(cb.equal(root.get(attributeName), value));
+
+        return getEntityManager().createQuery(cq).getResultList();
+    }
+
+    /**
+     * Reusable generic query using Criteria API to filter entities within a specific date range.
+     * Perfect for historical records, audit logs, or sales analytics.
+     */
+    protected List<T> findEntitiesByDateRange(String attributeName, LocalDate fromDate, LocalDate toDate) {
+        // Fail-fast logic: if either boundary is missing, returns empty list
+        if (fromDate == null || toDate == null) {
+            return List.of();
+        }
+
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<T> cq = cb.createQuery(entityClass);
+        Root<T> root = cq.from(entityClass);
+
+        cq.select(root);
+        // Generates safely: WHERE root.attributeName BETWEEN fromDate AND toDate
+        cq.where(cb.between(root.get(attributeName), fromDate, toDate));
+
+        return getEntityManager().createQuery(cq).getResultList();
+    }
 
     protected T getUniqueEqualStringAttribute(String attributeName, String equalPattern) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();

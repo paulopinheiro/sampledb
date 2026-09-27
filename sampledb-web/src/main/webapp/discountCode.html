@@ -9,19 +9,55 @@
     <body class="bg-gray-50 font-sans text-gray-800 p-6">
 
         <div class="max-w-4xl mx-auto">
-            <!-- Breadcrumb & Back button -->
+            <!-- Links de Navegação -->
             <div class="mb-4">
                 <a href="index.html" class="text-blue-600 hover:underline text-sm">← Back to Main Menu</a>
             </div>
 
-            <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                <h1 class="text-2xl font-bold text-gray-700 mb-4">Discount Codes Management</h1>
-                <p class="text-sm text-gray-500 mb-6">Authenticated security fetch using native JAX-RS pipelines.</p>
+            <!-- Caixas de Mensagens Dinâmicas -->
+            <div id="error-box" class="hidden bg-red-100 text-red-700 p-3 rounded mb-4 text-sm font-medium border border-red-200"></div>
+            <div id="success-box" class="hidden bg-green-100 text-green-700 p-3 rounded mb-4 text-sm font-medium border border-green-200"></div>
 
-                <!-- Error message dynamic container -->
-                <div id="error-box" class="hidden bg-red-100 text-red-700 p-3 rounded mb-4 text-sm font-medium"></div>
+            <!-- Bloco 1: Formulário Interativo (A Chave que faltava!) -->
+            <div class="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-100">
+                <h1 class="text-2xl font-bold text-gray-700 mb-2">Discount Codes Management</h1>
+                <p class="text-sm text-gray-500 mb-6">Authenticated security workspace using modern Jakarta REST pipelines.</p>
 
-                <!-- Native HTML Table styled via Tailwind -->
+                <h2 id="form-title" class="text-lg font-bold text-gray-700 mb-4">New Discount Code</h2>
+
+                <form id="discount-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Discount Code</label>
+                        <input type="text" id="discountCode" required maxlength="1" 
+                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none uppercase font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Rate (%)</label>
+                        <input type="number" id="rate" required step="0.01" min="0" max="100"
+                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="md:col-span-2 flex flex-wrap gap-2 pt-4 justify-between border-t border-gray-100 mt-2">
+                        <div class="flex gap-2">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2 rounded text-sm shadow transition">
+                                Save Code
+                            </button>
+                            <button type="button" id="btn-clear" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded text-sm transition">
+                                Clear Form
+                            </button>
+                        </div>
+                        <button type="button" id="btn-delete" class="hidden bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded text-sm shadow transition">
+                            Remove Code
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Bloco 2: Tabela de Listagem -->
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100">
+                <h2 class="text-xl font-bold text-gray-700 mb-4">Registered Discount Codes</h2>
+
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-white border border-gray-200 rounded-md">
                         <thead>
@@ -31,7 +67,6 @@
                             </tr>
                         </thead>
                         <tbody id="discount-table-body" class="divide-y divide-gray-100 text-sm">
-                            <!-- JavaScript will inject dynamic rows here -->
                             <tr>
                                 <td colspan="2" class="p-4 text-center text-gray-400 italic animate-pulse">Loading secure data from TomEE...</td>
                             </tr>
@@ -41,61 +76,137 @@
             </div>
         </div>
 
-        <!-- Frontend controller substituting the old Managed Bean -->
+        <!-- Script de Controle Operacional -->
         <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                // 1. Credentials payload for basic auth injection (manager:123)
-                // btoa encodes characters into standard base64 string
-                const authHeader = "Basic " + btoa("manager:123");
+            const API_URL = "/sampledb/api/discount-codes";
+            const AUTH_HEADER = "Basic " + btoa("manager:123");
 
-                // 2. Triggers the HTTP Fetch GET Request targeting our JAX-RS Resource
-                fetch("/sampledb/api/discount-codes", {
+            let isEditMode = false;
+
+            document.addEventListener("DOMContentLoaded", () => {
+                loadTableData();
+                document.getElementById("discount-form").addEventListener("submit", handleSave);
+                document.getElementById("btn-clear").addEventListener("click", clearForm);
+                document.getElementById("btn-delete").addEventListener("click", handleDelete);
+            });
+
+            function loadTableData() {
+                fetch(API_URL, {
                     method: "GET",
-                    headers: {
-                        "Authorization": authHeader,
-                        "Accept": "application/json"
-                    }
+                    headers: {"Authorization": AUTH_HEADER, "Accept": "application/json"}
                 })
-                        .then(response => {
-                            if (response.status === 401 || response.status === 403) {
-                                throw new Error("Access Denied: Invalid credentials or role privileges.");
-                            }
-                            if (!response.ok) {
-                                throw new Error("Server error while reading record data.");
-                            }
-                            return response.json(); // Parses incoming text payload into clean JS array
+                        .then(res => {
+                            if (res.status === 401 || res.status === 403)
+                                throw new Error("Access Denied: Check roles privileges.");
+                            if (!res.ok)
+                                throw new Error("Server error while reading database records.");
+                            return res.json();
                         })
                         .then(data => {
                             const tbody = document.getElementById("discount-table-body");
-                            tbody.innerHTML = ""; // Clears the fallback animation row
+                            tbody.innerHTML = "";
 
                             if (data.length === 0) {
                                 tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-gray-400 italic">No historical records found.</td></tr>`;
                                 return;
                             }
 
-                            // 3. Loops through the dynamic array generated from our DTO/Records
                             data.forEach(item => {
                                 const row = document.createElement("tr");
                                 row.className = "hover:bg-gray-50 transition";
                                 row.innerHTML = `
-                            <td class="p-3 font-semibold text-gray-700">${item.discountCode}</td>
-                            <td class="p-3 text-gray-600">${item.rate}%</td>
+                            <td class="p-3">
+                                <a href="#" onclick="selectRecord('${item.discountCode}', ${item.rate}); return false;" 
+                                   class="text-blue-600 hover:text-blue-800 font-bold hover:underline">
+                                    ${item.discountCode}
+                                </a>
+                            </td>
+                            <td class="p-3 text-gray-600">${parseFloat(item.rate).toFixed(2)}%</td>
                         `;
                                 tbody.appendChild(row);
                             });
                         })
-                        .catch(error => {
-                            // Catches structural exceptions and renders inside our clean HTML overlay
-                            const errorBox = document.getElementById("error-box");
-                            errorBox.innerText = error.message;
-                            errorBox.classList.remove("hidden");
+                        .catch(err => showMessage("error-box", err.message));
+            }
 
-                            const tbody = document.getElementById("discount-table-body");
-                            tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-red-500 font-medium">Failed to synchronize application layout.</td></tr>`;
-                        });
-            });
+            function selectRecord(code, rate) {
+                document.getElementById("discountCode").value = code;
+                document.getElementById("discountCode").disabled = true;
+                document.getElementById("rate").value = rate;
+
+                document.getElementById("form-title").innerText = "Update Discount Code: " + code;
+                document.getElementById("btn-delete").classList.remove("hidden");
+                isEditMode = true;
+                hideMessages();
+            }
+
+            function handleSave(event) {
+                event.preventDefault();
+                hideMessages();
+
+                const payload = {
+                    discountCode: document.getElementById("discountCode").value.toUpperCase().trim(),
+                    rate: parseFloat(document.getElementById("rate").value)
+                };
+
+                fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": AUTH_HEADER,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                })
+                        .then(res => {
+                            if (!res.ok)
+                                throw new Error("Failed to process transaction logic inside Core module.");
+                            showMessage("success-box", isEditMode ? "Record updated successfully!" : "New record created successfully!");
+                            clearForm();
+                            loadTableData();
+                        })
+                        .catch(err => showMessage("error-box", err.message));
+            }
+
+            function handleDelete() {
+                const code = document.getElementById("discountCode").value;
+                if (!code || !confirm(`Are you sure you want to permanently drop code "${code}"?`))
+                    return;
+
+                hideMessages();
+
+                fetch(`${API_URL}/${code}`, {
+                    method: "DELETE",
+                    headers: {"Authorization": AUTH_HEADER}
+                })
+                        .then(res => {
+                            if (!res.ok)
+                                throw new Error("Could not remove code. Foreign key constraint violation might occurred.");
+                            showMessage("success-box", "Record removed completely from system database.");
+                            clearForm();
+                            loadTableData();
+                        })
+                        .catch(err => showMessage("error-box", err.message));
+            }
+
+            function clearForm() {
+                document.getElementById("discount-form").reset();
+                document.getElementById("discountCode").disabled = false;
+                document.getElementById("form-title").innerText = "New Discount Code";
+                document.getElementById("btn-delete").classList.add("hidden");
+                isEditMode = false;
+            }
+
+            function showMessage(elementId, text) {
+                const box = document.getElementById(elementId);
+                box.innerText = text;
+                box.classList.remove("hidden");
+                setTimeout(() => box.classList.add("hidden"), 5000);
+            }
+
+            function hideMessages() {
+                document.getElementById("error-box").classList.add("hidden");
+                document.getElementById("success-box").classList.add("hidden");
+            }
         </script>
     </body>
 </html>
-

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SampleDB - Product Codes</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-50 font-sans text-gray-800 p-6">
+
+        <div class="max-w-4xl mx-auto">
+            <!-- Links de Navegação -->
+            <div class="mb-4">
+                <a href="index.html" class="text-blue-600 hover:underline text-sm">← Back to Main Menu</a>
+            </div>
+
+            <!-- Caixas de Mensagens Dinâmicas -->
+            <div id="error-box" class="hidden bg-red-100 text-red-700 p-3 rounded mb-4 text-sm font-medium border border-red-200"></div>
+            <div id="success-box" class="hidden bg-green-100 text-green-700 p-3 rounded mb-4 text-sm font-medium border border-green-200"></div>
+
+            <!-- Bloco 1: Formulário Relacional -->
+            <div class="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-100">
+                <h1 class="text-2xl font-bold text-gray-700 mb-2">Product Codes Management</h1>
+                <p class="text-sm text-gray-500 mb-6">Relational workspace mapping logical foreign keys via REST.</p>
+
+                <h2 id="form-title" class="text-lg font-bold text-gray-700 mb-4">New Product Code</h2>
+
+                <form id="product-code-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Prod Code (ID)</label>
+                        <input type="text" id="prodCode" required maxlength="2" 
+                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none uppercase font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Description</label>
+                        <input type="text" id="description" required
+                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Discount Tier (FK)</label>
+                        <!-- Caixa de Seleção que o JavaScript vai popular dinamicamente -->
+                        <select id="discountCode" required 
+                                class="w-full p-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium">
+                            <option value="">Loading tiers...</option>
+                        </select>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="md:col-span-3 flex flex-wrap gap-2 pt-4 justify-between border-t border-gray-100 mt-2">
+                        <div class="flex gap-2">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2 rounded text-sm shadow transition">
+                                Save Product Code
+                            </button>
+                            <button type="button" id="btn-clear" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded text-sm transition">
+                                Clear Form
+                            </button>
+                        </div>
+                        <button type="button" id="btn-delete" class="hidden bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded text-sm shadow transition">
+                            Remove Code
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Bloco 2: Tabela de Exibição -->
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100">
+                <h2 class="text-xl font-bold text-gray-700 mb-4">Registered Product Codes</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-md">
+                        <thead>
+                            <tr class="bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">
+                                <th class="p-3">Code</th>
+                                <th class="p-3">Description</th>
+                                <th class="p-3">Discount Code</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product-code-table-body" class="divide-y divide-gray-100 text-sm">
+                            <tr>
+                                <td colspan="3" class="p-4 text-center text-gray-400 italic">Loading database metrics...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <    <script>
+            const API_URL = "/sampledb/api/product-codes";
+            const DISCOUNT_API_URL = "/sampledb/api/discount-codes";
+            const AUTH_HEADER = "Basic " + btoa("manager:123");
+
+            let isEditMode = false;
+
+            document.addEventListener("DOMContentLoaded", () => {
+                // Inicialização coordenada da tela
+                loadDiscountCombo();
+                loadTableData();
+
+                document.getElementById("product-code-form").addEventListener("submit", handleSave);
+                document.getElementById("btn-clear").addEventListener("click", clearForm);
+                document.getElementById("btn-delete").addEventListener("click", handleDelete);
+            });
+
+            // Chamada Assíncrona: Popula a combo-box com dados vindos de outra API
+            function loadDiscountCombo() {
+                fetch(DISCOUNT_API_URL, {
+                    method: "GET",
+                    headers: {"Authorization": AUTH_HEADER, "Accept": "application/json"}
+                })
+                        .then(res => {
+                            if (!res.ok)
+                                throw new Error();
+                            return res.json();
+                        })
+                        .then(data => {
+                            const select = document.getElementById("discountCode");
+                            select.innerHTML = '<option value="">Select a Discount Tier</option>';
+
+                            data.forEach(item => {
+                                const opt = document.createElement("option");
+                                opt.value = item.discountCode;
+                                opt.innerText = `${item.discountCode} (${parseFloat(item.rate).toFixed(2)}%)`;
+                                select.appendChild(opt);
+                            });
+                        })
+                        .catch(() => {
+                            document.getElementById("discountCode").innerHTML = '<option value="">Failed to sync tiers</option>';
+                        });
+            }
+
+            // Chamada Assíncrona: Lista os códigos de produto e resolve o relacionamento lógico
+            function loadTableData() {
+                fetch(API_URL, {
+                    method: "GET",
+                    headers: {"Authorization": AUTH_HEADER, "Accept": "application/json"}
+                })
+                        .then(res => {
+                            if (!res.ok)
+                                throw new Error("Could not fetch product codes.");
+                            return res.json();
+                        })
+                        .then(data => {
+                            const tbody = document.getElementById("product-code-table-body");
+                            tbody.innerHTML = "";
+
+                            data.forEach(item => {
+                                const row = document.createElement("tr");
+                                row.className = "hover:bg-gray-50 transition";
+
+                                // Tratamento seguro para o relacionamento @ManyToOne lógico sem FK física
+                                const associatedDiscount = item.discountCode ? item.discountCode.discountCode : "None";
+
+                                row.innerHTML = `
+                            <td class="p-3">
+                                <a href="#" onclick="selectRecord('${item.prodCode}', '${item.description}', '${associatedDiscount}'); return false;" 
+                                   class="text-blue-600 hover:text-blue-800 font-bold hover:underline">
+                                    ${item.prodCode}
+                                </a>
+                            </td>
+                            <td class="p-3 text-gray-600">${item.description}</td>
+                            <td class="p-3 text-gray-500 font-medium">${associatedDiscount}</td>
+                        `;
+                                tbody.appendChild(row);
+                            });
+                        })
+                        .catch(err => showMessage("error-box", err.message));
+            }
+
+            // Ação: Mapeia o registro selecionado de volta para o formulário
+            function selectRecord(code, desc, discount) {
+                document.getElementById("prodCode").value = code;
+                document.getElementById("prodCode").disabled = true; // Bloqueia a PK na edição
+                document.getElementById("description").value = desc;
+                document.getElementById("discountCode").value = discount === "None" ? "" : discount;
+
+                document.getElementById("form-title").innerText = "Update Product Code: " + code;
+                document.getElementById("btn-delete").classList.remove("hidden");
+                isEditMode = true;
+                hideMessages();
+            }
+
+            // Chamada Assíncrona: Envia o payload estruturado (Record DTO) via POST
+            function handleSave(event) {
+                event.preventDefault();
+                hideMessages();
+
+                const payload = {
+                    prodCode: document.getElementById("prodCode").value.toUpperCase().trim(),
+                    description: document.getElementById("description").value.trim(),
+                    discountCode: document.getElementById("discountCode").value
+                };
+
+                fetch(API_URL, {
+                    method: "POST",
+                    headers: {"Authorization": AUTH_HEADER, "Content-Type": "application/json"},
+                    body: JSON.stringify(payload)
+                })
+                        .then(res => {
+                            if (!res.ok)
+                                throw new Error("Transaction rejected by Core business layer.");
+
+                            showMessage("success-box", "Product Code processed successfully.");
+                            clearForm();
+                            loadTableData();
+                        })
+                        .catch(err => showMessage("error-box", err.message));
+            }
+
+            // Chamada Assíncrona: Remove o registro de forma lógica ou física via DELETE
+            function handleDelete() {
+                const code = document.getElementById("prodCode").value;
+                if (!code || !confirm(`Drop product code "${code}" from system catalogs?`))
+                    return;
+
+                hideMessages();
+
+                fetch(`${API_URL}/${code}`, {
+                    method: "DELETE",
+                    headers: {"Authorization": AUTH_HEADER}
+                })
+                        .then(res => {
+                            if (!res.ok)
+                                throw new Error("Deletion rejected. Code may be bound to an active Product.");
+
+                            showMessage("success-box", "Product Code dropped completely.");
+                            clearForm();
+                            loadTableData();
+                        })
+                        .catch(err => showMessage("error-box", err.message));
+            }
+
+            // Utilitários de reset e interface
+            function clearForm() {
+                document.getElementById("product-code-form").reset();
+                document.getElementById("prodCode").disabled = false;
+                document.getElementById("form-title").innerText = "New Product Code";
+                document.getElementById("btn-delete").classList.add("hidden");
+                isEditMode = false;
+            }
+
+            function showMessage(elementId, text) {
+                const box = document.getElementById(elementId);
+                box.innerText = text;
+                box.classList.remove("hidden");
+                setTimeout(() => box.classList.add("hidden"), 5000);
+            }
+
+            function hideMessages() {
+                document.getElementById("error-box").classList.add("hidden");
+                document.getElementById("success-box").classList.add("hidden");
+            }
+        </script>
+    </body>
+</html>

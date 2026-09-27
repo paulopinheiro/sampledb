@@ -1,5 +1,6 @@
 package br.com.paulopinheiro.sampledb.persistence.entity;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,6 +44,7 @@ public class MicroMarket implements Serializable {
 
     // Removed REMOVE cascade to prevent accidental deletion of customers
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "microMarket")
+    @JsonbTransient // Avoids infinte recursion and StackOverflowError!
     private List<Customer> customers = new ArrayList<>(); // Defensive initialization
 
     public MicroMarket() {}

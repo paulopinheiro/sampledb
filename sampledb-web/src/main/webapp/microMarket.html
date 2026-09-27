@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SampleDB - Micro Markets</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-50 font-sans text-gray-800 p-6">
+
+        <div class="max-w-4xl mx-auto">
+            <!-- Links de Navegação -->
+            <div class="mb-4">
+                <a href="index.html" class="text-blue-600 hover:underline text-sm">← Back to Main Menu</a>
+            </div>
+
+            <!-- Caixas de Mensagens Dinâmicas -->
+            <div id="error-box" class="hidden bg-red-100 text-red-700 p-3 rounded mb-4 text-sm font-medium border border-red-200"></div>
+            <div id="success-box" class="hidden bg-green-100 text-green-700 p-3 rounded mb-4 text-sm font-medium border border-green-200"></div>
+
+            <!-- Bloco 1: Formulário de Cadastro -->
+            <div class="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-100">
+                <h1 class="text-2xl font-bold text-gray-700 mb-2">Micro Markets Management</h1>
+                <p class="text-sm text-gray-500 mb-6">Territorial logistics workspace secured with Jakarta Security roles.</p>
+
+                <h2 id="form-title" class="text-lg font-bold text-gray-700 mb-4">New Micro Market</h2>
+
+                <form id="market-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Zip Code (ID)</label>
+                        <input type="text" id="zipCode" required maxlength="10" 
+                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Radius (Logistics Area)</label>
+                        <input type="number" id="radius" required step="0.1" min="0"
+                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="md:col-span-2 flex flex-wrap gap-2 pt-4 justify-between border-t border-gray-100 mt-2">
+                        <div class="flex gap-2">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2 rounded text-sm shadow transition">
+                                Save Market
+                            </button>
+                            <button type="button" id="btn-clear" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded text-sm transition">
+                                Clear Form
+                            </button>
+                        </div>
+                        <button type="button" id="btn-delete" class="hidden bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded text-sm shadow transition">
+                            Remove Market
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Bloco 2: Tabela de Exibição -->
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100">
+                <h2 class="text-xl font-bold text-gray-700 mb-4">Registered Territories</h2>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-md">
+                        <thead>
+                            <tr class="bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">
+                                <th class="p-3">Zip Code (PK)</th>
+                                <th class="p-3">Radius Distance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="market-table-body" class="divide-y divide-gray-100 text-sm">
+                            <tr>
+                                <td colspan="2" class="p-4 text-center text-gray-400 italic">Loading distribution grids...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const API_URL = "/sampledb/api/micro-markets";
+            const AUTH_HEADER = "Basic " + btoa("manager:123");
+
+            let isEditMode = false;
+
+            document.addEventListener("DOMContentLoaded", () => {
+                loadTableData();
+                document.getElementById("market-form").addEventListener("submit", handleSave);
+                document.getElementById("btn-clear").addEventListener("click", clearForm);
+                document.getElementById("btn-delete").addEventListener("click", handleDelete);
+            });
+
+            // FETCH GET: Carrega os dados da tabela
+            function loadTableData() {
+                fetch(API_URL, {
+                    method: "GET",
+                    headers: {"Authorization": AUTH_HEADER, "Accept": "application/json"}
+                })
+                        .then(res => {
+                            if (res.status === 401 || res.status === 403)
+                                throw new Error("Access Denied: Check roles privileges.");
+                            if (!res.ok)
+                                throw new Error("Server error while reading database records.");
+                            return res.json();
+                        })
+                        .then(data => {
+                            const tbody = document.getElementById("market-table-body");
+                            tbody.innerHTML = "";
+
+                            if (data.length === 0) {
+                                tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-gray-400 italic">No historical records found.</td></tr>`;
+                                return;
+                            }
+
+                            data.forEach(item => {
+                                const row = document.createElement("tr");
+                                row.className = "hover:bg-gray-50 transition";
+                                row.innerHTML = `
+                            <td class="p-3">
+                                <a href="#" onclick="selectRecord('${item.zipCode}', ${item.radius}); return false;" 
+                                   class="text-blue-600 hover:text-blue-800 font-bold hover:underline">
+                                    ${item.zipCode}
+                                </a>
+                            </td>
+                            <td class="p-3 text-gray-600">${parseFloat(item.radius).toFixed(1)}</td>
+                        `;
+                                tbody.appendChild(row);
+                            });
+                        })
+                        .catch(err => showMessage("error-box", err.message));
+            }
+
+            // Ação: Preenche o formulário ao clicar na linha da tabela
+            function selectRecord(zip, radius) {
+                document.getElementById("zipCode").value = zip;
+                document.getElementById("zipCode").disabled = true; // Chave primária travada na edição
+                document.getElementById("radius").value = radius;
+
+                document.getElementById("form-title").innerText = "Update Micro Market: " + zip;
+                document.getElementById("btn-delete").classList.remove("hidden");
+                isEditMode = true;
+                hideMessages();
+            }
+
+            // FETCH POST: Envia o payload do Record DTO para salvar/atualizar
+            function handleSave(event) {
+                event.preventDefault();
+                hideMessages();
+
+                const payload = {
+                    zipCode: document.getElementById("zipCode").value.trim(),
+                    radius: parseFloat(document.getElementById("radius").value)
+                };
+
+                fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": AUTH_HEADER,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                })
+                        .then(res => {
+                            if (!res.ok)
+                                throw new Error("Transaction processing rejected by Core business layer.");
+                            showMessage("success-box", isEditMode ? "Market updated successfully!" : "New market created successfully!");
+                            clearForm();
+                            loadTableData();
+                        })
+                        .catch(err => showMessage("error-box", err.message));
+            }
+
+            // FETCH DELETE: Remove o mercado com base na chave primária
+            function handleDelete() {
+                const zip = document.getElementById("zipCode").value;
+                if (!zip || !confirm(`Are you sure you want to permanently drop micro market "${zip}"?`))
+                    return;
+
+                hideMessages();
+
+                fetch(`${API_URL}/${zip}`, {
+                    method: "DELETE",
+                    headers: {"Authorization": AUTH_HEADER}
+                })
+                        .then(res => {
+                            if (!res.ok)
+                                throw new Error("Deletion rejected. Code may be bound to an active Customer.");
+                            showMessage("success-box", "Micro Market dropped completely.");
+                            clearForm();
+                            loadTableData();
+                        })
+                        .catch(err => showMessage("error-box", err.message));
+            }
+
+            // Utilitários de Reset da Interface
+            function clearForm() {
+                document.getElementById("market-form").reset();
+                document.getElementById("zipCode").disabled = false;
+                document.getElementById("form-title").innerText = "New Micro Market";
+                document.getElementById("btn-delete").classList.add("hidden");
+                isEditMode = false;
+            }
+
+            // Exibe alertas temporários de feedback
+            function showMessage(elementId, text) {
+                const box = document.getElementById(elementId);
+                box.innerText = text;
+                box.classList.remove("hidden");
+                setTimeout(() => box.classList.add("hidden"), 5000);
+            }
+
+            function hideMessages() {
+                document.getElementById("error-box").classList.add("hidden");
+                document.getElementById("success-box").classList.add("hidden");
+            }
+        </script>
+    </body>
+</html>

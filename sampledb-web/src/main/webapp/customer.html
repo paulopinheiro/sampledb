@@ -3,12 +3,13 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>SampleDB - Manufacturers</title>
+        <title>SampleDB - Customer Desk</title>
+        <!-- Tag padrão e definitiva do Tailwind CSS homologada no laboratório -->
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body class="bg-gray-50 font-sans text-gray-800 p-6">
 
-        <div class="max-w-4xl mx-auto">
+        <div class="max-w-5xl mx-auto">
             <!-- Links de Navegação -->
             <div class="mb-4">
                 <a href="index.html" class="text-blue-600 hover:underline text-sm">← Back to Main Menu</a>
@@ -18,30 +19,54 @@
             <div id="error-box" class="hidden bg-red-100 text-red-700 p-3 rounded mb-4 text-sm font-medium border border-red-200"></div>
             <div id="success-box" class="hidden bg-green-100 text-green-700 p-3 rounded mb-4 text-sm font-medium border border-green-200"></div>
 
-            <!-- Bloco 1: Formulário Administrativo de Fabricantes -->
+            <!-- Bloco 1: Formulário do Balcão do Operador -->
             <div class="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-100">
-                <h1 class="text-2xl font-bold text-gray-700 mb-2">Manufacturers Management</h1>
-                <p class="text-sm text-gray-500 mb-6">Manage production partners, supply contracts, and corporate contact logs.</p>
+                <h1 class="text-2xl font-bold text-blue-700 mb-2">Customer Desk</h1>
+                <p class="text-sm text-gray-500 mb-6">Operator operations hub to manage commercial accounts, risk ratings, and delivery logistics.</p>
 
-                <h2 id="form-title" class="text-lg font-bold text-gray-700 mb-4">New Manufacturer</h2>
+                <h2 id="form-title" class="text-lg font-bold text-gray-700 mb-4">New Customer Account</h2>
 
-                <form id="manufacturer-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form id="customer-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- ID da Conta -->
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Manufacturer ID</label>
-                        <!-- O Label visual que o usuário enxerga -->
-                        <div id="manufacturerIdLabel" class="w-full p-2 bg-gray-100 border border-gray-300 rounded font-bold text-gray-500 bg-gray-100 select-none">
-                            Auto-generated
-                        </div>
-                        <!--  <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Manufacturer ID</label>
-                        <input type="number" id="manufacturerId" required min="1"
-                                class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold"> -->
-                        <input type="hidden" id="manufacturerId" />
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Customer ID</label>
+                        <input type="number" id="customerId" required min="1"
+                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold">
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Company Name</label>
+
+                    <!-- Nome do Cliente -->
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Customer Name</label>
                         <input type="text" id="name" required maxlength="30"
                                class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     </div>
+
+                    <!-- Combo-Box Relacional 1: Desconto (FK) -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Discount Code (FK)</label>
+                        <select id="discountCode" required 
+                                class="w-full p-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium">
+                            <option value="">Loading discounts...</option>
+                        </select>
+                    </div>
+
+                    <!-- Combo-Box Relacional 2: Território/Zip (FK) -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Logistics Zip (FK)</label>
+                        <select id="zipCode" required 
+                                class="w-full p-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium">
+                            <option value="">Loading markets...</option>
+                        </select>
+                    </div>
+
+                    <!-- Limite de Crédito -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Credit Limit ($)</label>
+                        <input type="number" id="creditLimit" required min="0" step="1"
+                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold">
+                    </div>
+
+                    <!-- Endereço e Localização -->
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Address Line 1</label>
                         <input type="text" id="addressLine1" required maxlength="30"
@@ -57,14 +82,16 @@
                         <input type="text" id="city" required maxlength="25"
                                class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     </div>
+
+                    <!-- Contatos -->
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">State (Code)</label>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">State</label>
                         <input type="text" id="state" required maxlength="2" placeholder="EX"
                                class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none uppercase">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Phone</label>
-                        <input type="text" id="phone" maxlength="12"
+                        <input type="text" id="phone" required maxlength="12"
                                class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     </div>
                     <div>
@@ -72,51 +99,49 @@
                         <input type="text" id="fax" maxlength="12"
                                class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     </div>
-                    <div>
+
+                    <div class="md:col-span-3">
                         <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Email</label>
-                        <input type="email" id="email" maxlength="40"
-                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Rep Contact</label>
-                        <input type="text" id="rep" maxlength="30"
+                        <input type="email" id="email" required maxlength="40"
                                class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     </div>
 
-                    <!-- Botões de Ação -->
-                    <div class="md:col-span-2 flex flex-wrap gap-2 pt-4 justify-between border-t border-gray-100 mt-2">
+                    <!-- Painel de Botões de Ação -->
+                    <div class="md:col-span-3 flex flex-wrap gap-2 pt-4 justify-between border-t border-gray-100 mt-2">
                         <div class="flex gap-2">
                             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2 rounded text-sm shadow transition">
-                                Save Manufacturer
+                                Save Account
                             </button>
                             <button type="button" id="btn-clear" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded text-sm transition">
                                 Clear Form
                             </button>
                         </div>
                         <button type="button" id="btn-delete" class="hidden bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded text-sm shadow transition">
-                            Remove Manufacturer
+                            Remove Customer
                         </button>
                     </div>
                 </form>
             </div>
 
-            <!-- Bloco 2: Tabela de Listagem -->
+            <!-- Bloco 2: Tabela Geral de Contas -->
             <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100">
-                <h2 class="text-xl font-bold text-gray-700 mb-4">Registered Manufacturers</h2>
+                <h2 class="text-xl font-bold text-gray-700 mb-4">Active Accounts Ledger</h2>
 
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-white border border-gray-200 rounded-md">
                         <thead>
                             <tr class="bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">
                                 <th class="p-3">ID</th>
-                                <th class="p-3">Name</th>
+                                <th class="p-3">Company Name</th>
                                 <th class="p-3">Location</th>
-                                <th class="p-3">Contact Email</th>
+                                <th class="p-3">Zip (FK)</th>
+                                <th class="p-3 text-center">Disc</th>
+                                <th class="p-3 text-right">Credit Limit</th>
                             </tr>
                         </thead>
-                        <tbody id="manufacturer-table-body" class="divide-y divide-gray-100 text-sm">
+                        <tbody id="customer-table-body" class="divide-y divide-gray-100 text-sm">
                             <tr>
-                                <td colspan="4" class="p-4 text-center text-gray-400 italic animate-pulse">Loading manufacturing records...</td>
+                                <td colspan="6" class="p-4 text-center text-gray-400 italic animate-pulse">Loading secure master records...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -124,6 +149,7 @@
             </div>
         </div>
 
-        <script src="resources/js/manufacturer.js"></script>
+        <script src="resources/js/customer.js"></script>
     </body>
 </html>
+

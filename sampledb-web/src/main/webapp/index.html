@@ -3,16 +3,28 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>SampleDB - Dashboard</title>
-        <!-- Tailwind CSS local ou via CDN para prototipagem rápida e visual moderno -->
+        <title>SampleDB - Enterprise Dashboard</title>
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body class="bg-gray-100 font-sans text-gray-800">
 
         <div class="min-h-screen flex flex-col">
             <!-- Barra de Navegação Superior Principal -->
-            <header class="bg-blue-700 text-white shadow-md p-4">
+            <header class="bg-blue-700 text-white shadow-md p-4 flex flex-wrap justify-between items-center gap-4">
                 <h1 class="text-2xl font-bold">SampleDB Enterprise Panel</h1>
+
+                <!-- Simulador de Login Integrado (Nativo da Sessão) -->
+                <div class="bg-blue-800 p-2 rounded-lg border border-blue-600 flex items-center gap-3 text-sm">
+                    <span class="font-medium text-blue-200">Active Profile:</span>
+                    <select id="login-simulator" class="bg-white text-gray-800 p-1 rounded font-bold focus:outline-none">
+                        <option value="manager">Manager (Admin Role)</option>
+                        <option value="operator">Operator (Operator Role)</option>
+                        <option value="invalid">Anonymous (Invalid Auth)</option>
+                    </select>
+                    <span id="session-badge" class="bg-green-500 text-white font-bold px-2 py-0.5 rounded text-xs animate-pulse">
+                        Synced
+                    </span>
+                </div>
             </header>
 
             <!-- Área de Conteúdo Centralizado -->
@@ -28,7 +40,7 @@
                             <h3 class="text-lg font-bold text-red-600 mb-2">Admin Management</h3>
                             <p class="text-sm text-gray-600 mb-4">Manage discount tiers, logical product codes, manufacturing contracts, and core corporate configurations.</p>
                         </div>
-                        <!-- Grupo de botões alinhados de forma elegante -->
+                        <!-- Grupo de botões administrativos alinhados -->
                         <div class="flex flex-wrap gap-2 pt-2">
                             <a href="discountCode.html" class="inline-block bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-4 py-2 rounded transition shadow">
                                 Discount Codes
@@ -54,8 +66,13 @@
                             <h3 class="text-lg font-bold text-blue-600 mb-2">Operator Desk</h3>
                             <p class="text-sm text-gray-600 mb-4">Register new enterprise customers, process incoming purchase orders, adjust inventory levels, and monitor active transaction logs.</p>
                         </div>
-                        <div class="pt-2">
-                            <span class="text-xs bg-gray-200 text-gray-500 px-2 py-1 rounded font-medium">Coming Soon (REST Services)</span>
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            <a href="customer.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded transition shadow">
+                                Customer Desk
+                            </a>
+                            <a href="purchaseOrder.html" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded transition shadow">
+                                Orders Desk
+                            </a>
                         </div>
                     </div>
 
@@ -63,5 +80,51 @@
             </main>
         </div>
 
+        <!-- Script Controlador do Simulador de Sessão Global -->
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const simulator = document.getElementById("login-simulator");
+
+                // 1. Verifica se já existe um perfil ativo guardado no cache do browser
+                const savedProfile = sessionStorage.getItem("active_profile");
+                if (savedProfile) {
+                    simulator.value = savedProfile;
+                } else {
+                    // Estado inicial padrão (Garante o manager inicial caso esteja vazio)
+                    updateSessionTokens("manager");
+                }
+
+                // 2. Escuta a alteração do select para reescrever as credenciais HTTP Basic
+                simulator.addEventListener("change", (e) => {
+                    updateSessionTokens(e.target.value);
+                });
+            });
+
+            function updateSessionTokens(profileName) {
+                let authString = "";
+
+                // Mapeia os usuários que configuramos anteriormente no tomcat-users.xml
+                if (profileName === "manager") {
+                    authString = "Basic " + btoa("manager:123"); // Role admin
+                } else if (profileName === "operator") {
+                    authString = "Basic " + btoa("operator:123"); // Role operator (Senha de teste)
+                } else {
+                    authString = "Basic " + btoa("anonymous:wrong_password"); // Força o estouro do 401
+                }
+
+                // Injeta os tokens na memória viva de sessão do navegador
+                sessionStorage.setItem("active_profile", profileName);
+                sessionStorage.setItem("active_auth", authString);
+
+                // Pisca o badge visual de sincronismo concluído
+                const badge = document.getElementById("session-badge");
+                badge.innerText = "Updated";
+                badge.className = "bg-amber-500 text-white font-bold px-2 py-0.5 rounded text-xs";
+                setTimeout(() => {
+                    badge.innerText = "Synced";
+                    badge.className = "bg-green-500 text-white font-bold px-2 py-0.5 rounded text-xs";
+                }, 800);
+            }
+        </script>
     </body>
 </html>

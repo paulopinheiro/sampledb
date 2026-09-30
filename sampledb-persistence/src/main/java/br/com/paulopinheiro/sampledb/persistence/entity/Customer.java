@@ -30,8 +30,7 @@ public class Customer implements Serializable {
     @Column(name = "name", length = 30, nullable = false)
     private String name;
 
-    @NotNull
-    @Size(min = 1, max = 30)
+    @Size(max = 30)
     @Column(name = "addressline1", length = 30, nullable = false)
     private String addressLine1;
 
@@ -43,7 +42,7 @@ public class Customer implements Serializable {
     @Column(name = "city", length = 25)
     private String city;
 
-    @Size(min = 2, max = 2)
+    @Size(max = 2)
     @Column(name = "state", length = 2)
     private String state;
 
@@ -201,6 +200,6 @@ public class Customer implements Serializable {
 
     @Override
     public String toString() {
-        return "Customer{id=" + customerId + ", name='" + name + "'}";
+        return "Customer{" + "customerId=" + customerId + ", name=" + name + ", addressLine1=" + addressLine1 + ", addressLine2=" + addressLine2 + ", city=" + city + ", state=" + state + ", phone=" + phone + ", fax=" + fax + ", email=" + email + ", creditLimit=" + creditLimit + ", discountCode=" + discountCode + ", microMarket=" + microMarket + '}';
     }
 }

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SampleDB - Orders Desk</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-50 font-sans text-gray-800 p-6">
+
+        <div class="max-w-5xl mx-auto">
+            <!-- Links de Navegação -->
+            <div class="mb-4">
+                <a href="index.html" class="text-blue-600 hover:underline text-sm">← Back to Main Menu</a>
+            </div>
+
+            <!-- Caixas de Mensagens Dinâmicas -->
+            <div id="error-box" class="hidden bg-red-100 text-red-700 p-3 rounded mb-4 text-sm font-medium border border-red-200"></div>
+            <div id="success-box" class="hidden bg-green-100 text-green-700 p-3 rounded mb-4 text-sm font-medium border border-green-200"></div>
+
+            <!-- Bloco 1: Formulário de Processamento de Ordens -->
+            <div class="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-100">
+                <h1 class="text-2xl font-bold text-indigo-700 mb-2">Orders Desk</h1>
+                <p class="text-sm text-gray-500 mb-6">Commercial checkout counter to process purchase orders, logistics tracking, and freight charges.</p>
+
+                <h2 id="form-title" class="text-lg font-bold text-gray-700 mb-4">New Purchase Order</h2>
+
+                <form id="order-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Número do Pedido (PK Manual) -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Order Number (PK)</label>
+                        <input type="number" id="orderNum" required min="1"
+                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold">
+                    </div>
+
+                    <!-- Combo-Box Relacional 1: Cliente (FK) -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Customer Account (FK)</label>
+                        <select id="customerId" required 
+                                class="w-full p-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium">
+                            <option value="">Loading accounts...</option>
+                        </select>
+                    </div>
+
+                    <!-- Combo-Box Relacional 2: Produto (FK) -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Select Merchandise (FK)</label>
+                        <select id="productId" required 
+                                class="w-full p-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium">
+                            <option value="">Loading inventory...</option>
+                        </select>
+                    </div>
+
+                    <!-- Quantidade Comercial -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Quantity Ordered</label>
+                        <input type="number" id="quantity" required min="1"
+                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold">
+                    </div>
+
+                    <!-- Custo de Frete -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Shipping Cost ($)</label>
+                        <input type="number" id="shippingCost" required min="0" step="0.01"
+                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- Companhia de Logística -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Shipping Company</label>
+                        <input type="text" id="shippingCompany" required maxlength="30" placeholder="e.g. FedEx, DHL"
+                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- Data da Venda -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Sales Date</label>
+                        <input type="date" id="salesDate" required
+                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- Data de Envio -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Shipping Date</label>
+                        <input type="date" id="shippingDate" required
+                               class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- Botões de Ação Operacional -->
+                    <div class="md:col-span-3 flex flex-wrap gap-2 pt-4 justify-between border-t border-gray-100 mt-2">
+                        <div class="flex gap-2">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2 rounded text-sm shadow transition">
+                                Process Checkout
+                            </button>
+                            <button type="button" id="btn-clear" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded text-sm transition">
+                                Clear Deck
+                            </button>
+                        </div>
+                        <button type="button" id="btn-delete" class="hidden bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded text-sm shadow transition">
+                            Void Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Bloco 2: Tabela de Pedidos Cadastrados -->
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100">
+                <h2 class="text-xl font-bold text-gray-700 mb-4">Booked Orders Log</h2>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-md">
+                        <thead>
+                            <tr class="bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">
+                                <th class="p-3">Order #</th>
+                                <th class="p-3">Customer</th>
+                                <th class="p-3">Product Description</th>
+                                <th class="p-3 text-right">Qty</th>
+                                <th class="p-3 text-right">Freight</th>
+                                <th class="p-3 text-center">Sales Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="order-table-body" class="divide-y divide-gray-100 text-sm">
+                            <tr>
+                                <td colspan="6" class="p-4 text-center text-gray-400 italic animate-pulse">Loading transaction books...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <script src="resources/js/purchaseOrder.js"></script>
+    </body>
+</html>
